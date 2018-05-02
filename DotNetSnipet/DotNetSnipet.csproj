@@ -5,6 +5,9 @@
     <RootNamespace>Uzgoto.DotNetSnipet</RootNamespace>
     <Authors>uzgoto</Authors>
     <AssemblyVersion>0.0.0.1</AssemblyVersion>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
   </PropertyGroup>
 
 </Project>
