@@ -4,7 +4,7 @@ using System.Data;
 using System.ComponentModel;
 using System.Linq;
 
-namespace Uzgoto.DotNetSnipet
+namespace Uzgoto.DotNetSnipet.Convertor
 {
     public static class DataTableExtension
     {
