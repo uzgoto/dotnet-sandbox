@@ -60,28 +60,28 @@ namespace Uzgoto.DotNetSnipet.Convertor
             public object this[int index] => this.GetValue(index);
             public object this[string name] => this.GetValue(this.GetOrdinal(name));
 
-            public bool GetBoolean(int index) => (bool)GetValue(index);
-            public byte GetByte(int index) => (byte)GetValue(index);
+            public bool GetBoolean(int index) => (bool)this.GetValue(index);
+            public byte GetByte(int index) => (byte)this.GetValue(index);
             public long GetBytes(int index, long fieldoffset, byte[] buffer, int bufferoffset, int lenght) => throw new NotImplementedException();
-            public char GetChar(int index) => (char)GetValue(index);
+            public char GetChar(int index) => (char)this.GetValue(index);
             public long GetChars(int index, long fieldoffset, char[] buffer, int bufferoffset, int length) => throw new NotImplementedException();
             public IDataReader GetData(int index) => throw new NotImplementedException();
             public string GetDataTypeName(int index) => throw new NotImplementedException();
-            public DateTime GetDateTime(int index) => (DateTime)GetValue(index);
-            public decimal GetDecimal(int index) => (decimal)GetValue(index);
-            public double GetDouble(int index) => (double)GetValue(index);
+            public DateTime GetDateTime(int index) => (DateTime)this.GetValue(index);
+            public decimal GetDecimal(int index) => (decimal)this.GetValue(index);
+            public double GetDouble(int index) => (double)this.GetValue(index);
             public Type GetFieldType(int index) => _properties[index].PropertyType;
-            public float GetFloat(int index) => (float)GetValue(index);
-            public Guid GetGuid(int index) => (Guid)GetValue(index);
-            public short GetInt16(int index) => (short)GetValue(index);
-            public int GetInt32(int index) => (int)GetValue(index);
-            public long GetInt64(int index) => (long)GetValue(index);
+            public float GetFloat(int index) => (float)this.GetValue(index);
+            public Guid GetGuid(int index) => (Guid)this.GetValue(index);
+            public short GetInt16(int index) => (short)this.GetValue(index);
+            public int GetInt32(int index) => (int)this.GetValue(index);
+            public long GetInt64(int index) => (long)this.GetValue(index);
             public string GetName(int index) => _properties[index].Name;
-            public int GetOrdinal(string name) => Array.IndexOf(_properties, name);
-            public string GetString(int index) => (string)GetValue(index);
+            public int GetOrdinal(string name) => Array.FindIndex(_properties, prop => prop.Name == name);
+            public string GetString(int index) => (string)this.GetValue(index);
             public object GetValue(int index) => _properties[index].GetValue(_entities.Current);
             public int GetValues(object[] values) => throw new NotImplementedException();
-            public bool IsDBNull(int index) => GetValue(index) is DBNull;
+            public bool IsDBNull(int index) => this.GetValue(index) is DBNull;
             #endregion
         }
         #endregion
