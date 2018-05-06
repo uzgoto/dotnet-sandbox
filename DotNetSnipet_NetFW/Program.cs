@@ -36,7 +36,6 @@ namespace DotNetSnipet_NetFW
                 sw.Reset();
             }
             Array.ForEach(msgs, msg => Console.WriteLine(msg));
-            File.AppendAllLines(@"C:\Users\Honey\Desktop\log.txt", msgs);
             Console.ReadKey();
         }
     }
