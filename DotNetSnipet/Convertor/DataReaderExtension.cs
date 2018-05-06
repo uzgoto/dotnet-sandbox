@@ -63,8 +63,8 @@ namespace Uzgoto.DotNetSnipet.Convertor
             public short GetInt16(int index) => (short)this.GetValue(index);
             public int GetInt32(int index) => (int)this.GetValue(index);
             public long GetInt64(int index) => (long)this.GetValue(index);
-            public string GetName(int index) => PropertyCollection<T>.Infos[index].Name;
-            public int GetOrdinal(string name) => Array.FindIndex(PropertyCollection<T>.Infos, prop => prop.Name == name);
+            public string GetName(int index) => PropertyCollection<T>.Infos[index].MappedName;
+            public int GetOrdinal(string name) => PropertyCollection<T>.MappedOrdinal(name);
             public string GetString(int index) => (string)this.GetValue(index);
             public object GetValue(int index) => PropertyCollection<T>.Infos[index].GetValue(_entities.Current);
             public int GetValues(object[] values) => throw new NotImplementedException();
@@ -85,7 +85,7 @@ namespace Uzgoto.DotNetSnipet.Convertor
                 var entity = Activator.CreateInstance<T>();
                 foreach (var prop in PropertyCollection<T>.Infos)
                 {
-                    prop.SetValue(entity, _self[prop.Name]);
+                    prop.SetValue(entity, _self[prop.MappedName]);
                 }
                 yield return entity;
             }
