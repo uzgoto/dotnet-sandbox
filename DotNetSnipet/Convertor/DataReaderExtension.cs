@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Linq;
-using System.Text;
+using System.Reflection;
 
 namespace Uzgoto.DotNetSnipet.Convertor
 {
@@ -18,15 +15,8 @@ namespace Uzgoto.DotNetSnipet.Convertor
         #region Nested class.
         internal class EnumerableDataReader<T> : IDataReader
         {
-            private static readonly PropertyDescriptor[] _properties;
-
-            static EnumerableDataReader()
-            {
-                _properties =
-                    TypeDescriptor.GetProperties(typeof(T))
-                        .OfType<PropertyDescriptor>()
-                        .ToArray();
-            }
+            private static readonly PropertyInfo[] _properties =
+                typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
             internal static IDataReader Create(IEnumerable<T> entities)
             {
@@ -88,8 +78,8 @@ namespace Uzgoto.DotNetSnipet.Convertor
 
         public static IEnumerable<T> AsEnumerable<T>(this IDataReader _self)
         {
-            var props = TypeDescriptor.GetProperties(typeof(T));
-            if (_self.FieldCount != props.Count)
+            var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            if (_self.FieldCount != props.Length)
             {
                 throw new InvalidOperationException();
             }
@@ -97,7 +87,7 @@ namespace Uzgoto.DotNetSnipet.Convertor
             while(_self.Read())
             {
                 var entity = Activator.CreateInstance<T>();
-                foreach (PropertyDescriptor prop in props)
+                foreach (var prop in props)
                 {
                     prop.SetValue(entity, _self[prop.Name]);
                 }
