@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Uzgoto.DotNetSnipet.Convertor;
+using Uzgoto.DotNetSnipet.Entity;
 
 namespace DotNetSnipet_NetFW
 {
@@ -15,9 +16,9 @@ namespace DotNetSnipet_NetFW
         {
             var expected = new Entity[]
             {
-                new Entity(){Id=1,Name="id1",RegisterdAt=DateTime.Parse("2018-5-1"),Value=332.31m },
-                new Entity(){Id=1,Name="id2",RegisterdAt=DateTime.Parse("2018-5-2"),Value=332.32m },
-                new Entity(){Id=3,Name="id3",RegisterdAt=DateTime.Parse("2018-5-3"),Value=332.33m },
+                new Entity(){Id=1,Name="id1",RegisteredAt=DateTime.Parse("2018-5-1"),Value=332.31m },
+                new Entity(){Id=1,Name="id2",RegisteredAt=DateTime.Parse("2018-5-2"),Value=332.32m },
+                new Entity(){Id=3,Name="id3",RegisteredAt=DateTime.Parse("2018-5-3"),Value=332.33m },
             };
 
             var sw = new Stopwatch();
@@ -42,9 +43,13 @@ namespace DotNetSnipet_NetFW
 
     class Entity : IEquatable<Entity>
     {
+        [EntityField(MappingTo = "EntityId")]
         public int Id { get; set; }
+        [EntityField(MappingTo = "EntityName")]
         public string Name { get; set; }
-        public DateTime RegisterdAt { get; set; }
+        [EntityField(MappingTo = "RegiteredAt")]
+        public DateTime RegisteredAt { get; set; }
+        [EntityField(MappingTo = "EntityValue")]
         public decimal Value { get; set; }
 
         public bool Equals(Entity other)
@@ -52,7 +57,7 @@ namespace DotNetSnipet_NetFW
             return
                 this.Id == other.Id &&
                 this.Name == other.Name &&
-                this.RegisterdAt == other.RegisterdAt &&
+                this.RegisteredAt == other.RegisteredAt &&
                 this.Value == other.Value;
         }
     }

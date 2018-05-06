@@ -10,5 +10,8 @@ namespace Uzgoto.DotNetSnipet.Entity
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(prop => prop.GetCustomAttributes(typeof(EntityFieldAttribute)).Any())
                 .ToArray();
+
+        internal static string MappedName(int index) =>
+            ((EntityFieldAttribute)Infos[index].GetCustomAttribute(typeof(EntityFieldAttribute))).MappingTo;
     }
 }
