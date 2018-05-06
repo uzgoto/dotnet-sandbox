@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Reflection;
+using Uzgoto.DotNetSnipet.Entity;
 
 namespace Uzgoto.DotNetSnipet.Convertor
 {
@@ -13,12 +13,6 @@ namespace Uzgoto.DotNetSnipet.Convertor
         }
 
         #region Nested class.
-        internal static class PropertyCollection<TEntity>
-        {
-            internal static PropertyInfo[] Infos =>
-                typeof(TEntity).GetProperties(BindingFlags.Instance | BindingFlags.Public);
-        }
-
         internal class EnumerableDataReader<T> : IDataReader
         {
             internal static IDataReader Create(IEnumerable<T> entities)
