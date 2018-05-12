@@ -43,8 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\DbConnectionFactory.cs" />
-    <Compile Include="Data\IConnectionFactory.cs" />
+    <Compile Include="Data\DbConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\Repository.cs" />
     <Compile Include="Sample\Program.cs" />
