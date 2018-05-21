@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\DbConnection.cs" />
     <Compile Include="Data\DbContext.cs" />
     <Compile Include="Data\IDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
