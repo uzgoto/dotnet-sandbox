@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Uzgoto.DotNetSnipet.Data
 {
-    public class DbContext : IDbContext
+    public sealed class DbContext : IDbContext
     {
         private readonly IDbConnection _connection;
 
@@ -42,15 +42,57 @@ namespace Uzgoto.DotNetSnipet.Data
             this._connection.ConnectionString = conStr.ConnectionString;
         }
 
+        private void OpenIfClosed()
+        {
+            if (this._connection.State == ConnectionState.Closed || this._connection.State == ConnectionState.Broken)
+            {
+                this._connection.Open();
+            }
+        }
+
+        #region Implement IDbContext
         public IDbTransaction BeginTransaction()
         {
-            this._connection.Open();
+            this.OpenIfClosed();
             return this._connection.BeginTransaction();
         }
 
-        public void Commit()
+        public void Commit(IDbTransaction transaction)
         {
-            throw new NotImplementedException();
+            if (transaction == null)
+            {
+                throw new ArgumentException($"{nameof(transaction)} is null.");
+            }
+            if (!transaction.Connection.Equals(this._connection))
+            {
+                throw new ArgumentException($"Connection of {nameof(transaction)} is not supported.");
+            }
+            if (transaction.Connection.State == ConnectionState.Broken || transaction.Connection.State == ConnectionState.Closed)
+            {
+                throw new ArgumentException($"Connection of {nameof(transaction)} is closed.");
+            }
+
+            transaction.Commit();
+            this._connection.Close();
+        }
+
+        public void RollBack(IDbTransaction transaction)
+        {
+            if (transaction == null)
+            {
+                throw new ArgumentException($"{nameof(transaction)} is null.");
+            }
+            if (!transaction.Connection.Equals(this._connection))
+            {
+                throw new ArgumentException($"Connection of {nameof(transaction)} is not supported.");
+            }
+            if (transaction.Connection.State == ConnectionState.Broken || transaction.Connection.State == ConnectionState.Closed)
+            {
+                throw new ArgumentException($"Connection of {nameof(transaction)} is closed.");
+            }
+
+            transaction.Rollback();
+            this._connection.Close();
         }
 
         public void ExecuteBulkCopy<TEntity>(IEnumerable<TEntity> entities)
@@ -97,10 +139,6 @@ namespace Uzgoto.DotNetSnipet.Data
         {
             throw new NotImplementedException();
         }
-
-        public void RollBack()
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }

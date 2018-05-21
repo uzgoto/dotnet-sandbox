@@ -20,7 +20,7 @@ namespace Uzgoto.DotNetSnipet.Data
         void ExecuteBulkCopy(IDataReader dataReader);
         void ExecuteBulkCopy(Stream stream);
         IDbTransaction BeginTransaction();
-        void Commit();
-        void RollBack();
+        void Commit(IDbTransaction transaction);
+        void RollBack(IDbTransaction transaction);
     }
 }
