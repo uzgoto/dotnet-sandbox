@@ -52,7 +52,10 @@
     <Compile Include="Sample\Program.cs" />
     <Compile Include="WinForms\InterProc\Helper.cs" />
     <Compile Include="WinForms\InterProc\ProcessArgumentAttribute.cs" />
-    <Compile Include="WinForms\SampleDialog.cs" />
+    <Compile Include="WinForms\Validators\Validator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WinForms\Validators\ValidatorAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
