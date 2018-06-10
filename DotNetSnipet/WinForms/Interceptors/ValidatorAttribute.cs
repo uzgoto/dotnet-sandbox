@@ -37,9 +37,4 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
             }
         }
     }
-
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    class ValidationTrrigerAttribute : Attribute
-    {
-    }
 }

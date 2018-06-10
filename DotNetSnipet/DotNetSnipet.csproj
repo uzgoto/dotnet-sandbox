@@ -50,6 +50,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\Repository.cs" />
     <Compile Include="Sample\Program.cs" />
+    <Compile Include="WinForms\Interceptors\InterceptAttribute.cs" />
     <Compile Include="WinForms\InterProc\Helper.cs" />
     <Compile Include="WinForms\InterProc\ProcessArgumentAttribute.cs" />
     <Compile Include="WinForms\Interceptors\Validator.cs">
