@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Remoting.Proxies;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Validators
+namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
+
 {
     public enum InputType
     {
@@ -44,11 +39,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Validators
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    class ValidationTrrigerAttribute : ProxyAttribute
+    class ValidationTrrigerAttribute : Attribute
     {
-        public ValidationTrrigerAttribute()
-        {
-        }
-
     }
 }

@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Reflection;
-using System.Runtime.Remoting.Proxies;
-using System.Runtime.Remoting.Messaging;
-using System.Runtime.Remoting;
 using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
+using System.Windows.Forms;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Validators
+namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
 {
     public class BaseForm : Form
     {
