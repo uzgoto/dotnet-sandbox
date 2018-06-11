@@ -35,7 +35,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
             base.OnLoad(e);
 
             this.SanitizationTargets =
-                this.EnumerateControls<ValidationTargetAttribute>(this)
+                this.EnumerateControls<SanitizerTargetAttribute>(this)
                     .ToDictionary(
                         target => target.control,
                         target => target.attribute.InputType);

@@ -7,9 +7,9 @@ namespace Uzgoto.DotNetSnipet.Sample
 {
     public class DerivedForm : BaseForm
     {
-        [ValidationTarget(InputType.Alpha)]
+        [SanitizerTargetAttribute(InputType.Alpha)]
         private TextBox textbox1 = new TextBox();
-        [ValidationTarget(InputType.Numeric)]
+        [SanitizerTargetAttribute(InputType.Numeric)]
         private TextBox textbox2 = new TextBox();
         private TextBox textbox3 = new TextBox();
         private Label label1 = new Label();

@@ -58,13 +58,13 @@
       <DependentUpon>BaseForm.cs</DependentUpon>
     </Compile>
     <Compile Include="WinForms\Interceptors\InterceptAttribute.cs" />
-    <Compile Include="WinForms\Interceptors\Validators\InputType.cs" />
+    <Compile Include="WinForms\Interceptors\Sanitizers\InputType.cs" />
     <Compile Include="WinForms\InterProc\Helper.cs" />
     <Compile Include="WinForms\InterProc\ProcessArgumentAttribute.cs" />
     <Compile Include="Sample\DerivedForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="WinForms\Interceptors\Validators\ValidationTargetAttribute.cs" />
+    <Compile Include="WinForms\Interceptors\Sanitizers\SanitizerTargetAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
