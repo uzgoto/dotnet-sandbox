@@ -16,7 +16,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
         private static PropertyInfo ControlEventsProperty =>
             typeof(Control).GetProperty("Events", BindingFlags.Instance | BindingFlags.NonPublic);
         private static MethodInfo InterceptMethod =>
-            typeof(Interceptor).GetMethod(nameof(Sanitaize), BindingFlags.Instance | BindingFlags.NonPublic);
+            typeof(Interceptor).GetMethod(nameof(Intercept), BindingFlags.Instance | BindingFlags.NonPublic);
 
         private static Dictionary<Control, SanitizerTargetAttribute> SanitizationTargets { get; set; }
         private static IEnumerable<Control> Interceptors { get; set; }
@@ -86,7 +86,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
             }
         }
 
-        private void Sanitaize(object sender, EventArgs e)
+        private void Intercept(object sender, EventArgs e)
         {
             var msg = SanitizationTargets
                 .Select(target => 
