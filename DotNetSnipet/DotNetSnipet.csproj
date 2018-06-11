@@ -59,7 +59,7 @@
     <Compile Include="WinForms\Interceptors\InterceptAttribute.cs" />
     <Compile Include="WinForms\InterProc\Helper.cs" />
     <Compile Include="WinForms\InterProc\ProcessArgumentAttribute.cs" />
-    <Compile Include="WinForms\Interceptors\Validator.cs">
+    <Compile Include="Sample\DerivedForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="WinForms\Interceptors\ValidatorAttribute.cs" />

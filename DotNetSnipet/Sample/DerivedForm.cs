@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
+using Uzgoto.DotNetSnipet.WinForms.Interceptors;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
+namespace Uzgoto.DotNetSnipet.Sample
 {
     public class DerivedForm : BaseForm
     {
