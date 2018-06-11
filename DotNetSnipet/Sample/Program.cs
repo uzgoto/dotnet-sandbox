@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Uzgoto.DotNetSnipet.WinForms.Validators;
+using Uzgoto.DotNetSnipet.WinForms.Interceptors;
 
 namespace Uzgoto.DotNetSnipet.Sample
 {
