@@ -5,15 +5,20 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Uzgoto.DotNetSnipet.WinForms.Interceptors.Validators;
 
 namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
 {
     public partial class BaseForm : Form
     {
-        private static FieldInfo eventClickField = typeof(Control).GetField("EventClick", BindingFlags.NonPublic | BindingFlags.Static);
-        private static EventInfo clickEvent = typeof(Control).GetEvent(nameof(Click));
-        private static PropertyInfo controlEvents = typeof(Control).GetProperty(nameof(Events), BindingFlags.Instance | BindingFlags.NonPublic);
-        private static MethodInfo interceptor = typeof(BaseForm).GetMethod(nameof(Validate), BindingFlags.Instance | BindingFlags.NonPublic);
+        private static FieldInfo eventClickField =
+            typeof(Control).GetField("EventClick", BindingFlags.NonPublic | BindingFlags.Static);
+        private static EventInfo clickEvent =
+            typeof(Control).GetEvent(nameof(Click));
+        private static PropertyInfo controlEvents =
+            typeof(Control).GetProperty(nameof(Events), BindingFlags.Instance | BindingFlags.NonPublic);
+        private static MethodInfo interceptor =
+            typeof(BaseForm).GetMethod(nameof(Validate), BindingFlags.Instance | BindingFlags.NonPublic);
 
         private Dictionary<Control, List<Delegate>> _handlers = new Dictionary<Control, List<Delegate>>();
 
@@ -30,7 +35,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
         {
             base.OnLoad(e);
 
-            var targetControls = this.EnumerateControlsWithAttribute<ValidatorAttribute>(this);
+            var targetControls = this.EnumerateControlsWithAttribute<ValidationTargetAttribute>(this);
             this.ValidationTargets = targetControls.ToDictionary(ctrl => ctrl.Item1, ctrl => ctrl.Item2.InputType);
 
             var trrigerControls = this.EnumerateControlsWithAttribute<InterceptAttribute>(this);

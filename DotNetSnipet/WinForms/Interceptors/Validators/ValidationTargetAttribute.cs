@@ -1,26 +1,18 @@
 ﻿using System;
 using System.Linq;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
-
+namespace Uzgoto.DotNetSnipet.WinForms.Interceptors.Validators
 {
-    public enum InputType
-    {
-        Alpha,
-        Numeric,
-        AlphaNumeric,
-    }
-
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-    public class ValidatorAttribute : Attribute
+    public class ValidationTargetAttribute : Attribute
     {
-        private static string Alpha = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        private static readonly string Alpha = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-        public ValidatorAttribute(InputType inputType)
+        public InputType InputType { get; private set; }
+        public ValidationTargetAttribute(InputType inputType)
         {
             this.InputType = InputType;
         }
-        public InputType InputType { get; private set; }
 
         public bool IsValid(string value)
         {

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Windows.Forms;
 using Uzgoto.DotNetSnipet.WinForms.Interceptors;
+using Uzgoto.DotNetSnipet.WinForms.Interceptors.Validators;
 
 namespace Uzgoto.DotNetSnipet.Sample
 {
     public class DerivedForm : BaseForm
     {
-        [Validator(InputType.Alpha)]
+        [ValidationTarget(InputType.Alpha)]
         private TextBox textbox1 = new TextBox();
-        [Validator(InputType.Numeric)]
+        [ValidationTarget(InputType.Numeric)]
         private TextBox textbox2 = new TextBox();
         private TextBox textbox3 = new TextBox();
         private Label label1 = new Label();
