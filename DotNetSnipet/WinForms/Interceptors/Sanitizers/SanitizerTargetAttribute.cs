@@ -14,19 +14,23 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors.Validators
             this.InputType = InputType;
         }
 
-        public string Sanitize(string value)
+        public bool IsValid(InputType inputType, string value)
         {
-            switch (this.InputType)
+            switch (InputType)
             {
                 case InputType.Alpha:
-                    return (value.All(c => Alpha.Contains(c))) ? value : null;
+                    return value.All(c => Alpha.Contains(c));
                 case InputType.Numeric:
-                    return (value.All(c => char.IsDigit(c))) ? value : null;
+                    return value.All(c => char.IsDigit(c));
                 case InputType.AlphaNumeric:
-                    return (value.All(c => Alpha.Contains(c) || char.IsDigit(c))) ? value : null;
+                    return value.All(c => Alpha.Contains(c) || char.IsDigit(c));
                 default:
                     throw new ArgumentException(nameof(value));
             }
+        }
+        public string Sanitize(string value)
+        {
+            return (IsValid(this.InputType, value)) ? value : null;
         }
     }
 }

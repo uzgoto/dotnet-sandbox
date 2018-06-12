@@ -57,7 +57,7 @@
     <Compile Include="WinForms\Interceptors\BaseForm.Designer.cs">
       <DependentUpon>BaseForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="WinForms\Interceptors\InterceptAttribute.cs" />
+    <Compile Include="WinForms\Interceptors\InterceptEventAttribute.cs" />
     <Compile Include="WinForms\Interceptors\Interceptor.cs" />
     <Compile Include="WinForms\Interceptors\Sanitizers\InputType.cs" />
     <Compile Include="WinForms\InterProc\Helper.cs" />

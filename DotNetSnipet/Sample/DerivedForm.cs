@@ -13,7 +13,7 @@ namespace Uzgoto.DotNetSnipet.Sample
         private TextBox textbox2 = new TextBox();
         private TextBox textbox3 = new TextBox();
         private Label label1 = new Label();
-        [Intercept("Click")]
+        [InterceptEvent("Click")]
         private Button button1 = new Button();
 
         public DerivedForm() : base()

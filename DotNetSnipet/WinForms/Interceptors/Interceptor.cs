@@ -15,30 +15,25 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
         private static EventInfo ControlClickEvent => typeof(Control).GetEvent("Click");
         private static PropertyInfo ControlEventsProperty =>
             typeof(Control).GetProperty("Events", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static MethodInfo InterceptMethod =>
-            typeof(Interceptor).GetMethod(nameof(Intercept), BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private static Dictionary<Control, SanitizerTargetAttribute> SanitizationTargets { get; set; }
-        private static IEnumerable<Control> Interceptors { get; set; }
-        private static Dictionary<Control, List<Delegate>> TmpHandlers { get; set; }
+        private static Dictionary<Control, List<Delegate>> OriginalDelegates { get; set; }
+
+        private MethodInfo InterceptMethod { get; set; }
 
         private Interceptor() { }
 
-        public static void InterceptClickEvent(Form form)
+        public static Interceptor Create(EventHandler handler)
         {
-            SanitizationTargets =
-                EnumerateControls<SanitizerTargetAttribute>(form)
-                    .ToDictionary(
-                        target => target.control,
-                        target => target.attribute);
-            if (SanitizationTargets == null) return;
+            return
+                new Interceptor()
+                {
+                    InterceptMethod = handler.GetMethodInfo(),
+                };
+        }
 
-            Interceptors =
-                EnumerateControls<InterceptAttribute>(form)
-                    .Select(ctrl => ctrl.control);
-            if (Interceptors == null) return;
-
-            foreach (var control in Interceptors)
+        public void InterceptClickEvent(Form form, IEnumerable<Control> trrigerControls)
+        {
+            foreach (var control in trrigerControls)
             {
                 // Get EventHandlerList from Control.Events property.
                 var eventHandlers = ControlEventsProperty.GetValue(control, null) as EventHandlerList;
@@ -48,12 +43,12 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
                 if (clickEventHandler != null)
                 {
                     var clickDelegates = clickEventHandler.GetInvocationList();
-                    if (TmpHandlers == null) TmpHandlers = new Dictionary<Control, List<Delegate>>();
-                    if (!TmpHandlers.ContainsKey(control))
+                    if (OriginalDelegates == null) OriginalDelegates = new Dictionary<Control, List<Delegate>>();
+                    if (!OriginalDelegates.ContainsKey(control))
                     {
-                        TmpHandlers.Add(control, new List<Delegate>());
+                        OriginalDelegates.Add(control, new List<Delegate>());
                     }
-                    TmpHandlers[control].AddRange(clickDelegates);
+                    OriginalDelegates[control].AddRange(clickDelegates);
 
                     Array.ForEach(clickDelegates, dlgt => eventHandlers.RemoveHandler(eventKey, dlgt));
 
@@ -64,39 +59,9 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
             }
         }
 
-        private static IEnumerable<(Control control, TAttribute attribute)> EnumerateControls<TAttribute>(Form form) where TAttribute : Attribute
+        public void Invoke(object sender, EventArgs e)
         {
-            if (form == null) throw new ArgumentNullException(nameof(form));
-            if (form.Controls == null) throw new ArgumentException($"{nameof(form)} has no controls.");
-
-            var controls = form.Controls.OfType<Control>();
-
-            var fields = form.GetType().GetRuntimeFields();
-            foreach (var field in fields)
-            {
-                var value = field.GetValue(form);
-                if (value is Control control)
-                {
-                    var attribute = field.GetCustomAttribute<TAttribute>();
-                    if (attribute != null)
-                    {
-                        yield return (control, attribute);
-                    }
-                }
-            }
-        }
-
-        private void Intercept(object sender, EventArgs e)
-        {
-            var msg = SanitizationTargets
-                .Select(target => 
-                $"{target.Key.GetType().Name}, " +
-                $"{target.Key.Text}, " +
-                $"{target.Value.InputType.ToString()}, " +
-                $"Sanitized:{target.Value.Sanitize(target.Key.Text)}");
-            MessageBox.Show(string.Join(Environment.NewLine, msg));
-
-            foreach (var dlgt in TmpHandlers[sender as Control])
+            foreach (var dlgt in OriginalDelegates[sender as Control])
             {
                 dlgt.DynamicInvoke(sender, e);
             }

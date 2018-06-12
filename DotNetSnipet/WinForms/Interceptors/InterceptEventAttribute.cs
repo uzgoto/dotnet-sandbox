@@ -3,10 +3,10 @@
 namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    public class InterceptAttribute : Attribute
+    public class InterceptEventAttribute : Attribute
     {
         public string EventName { get; private set; }
-        public InterceptAttribute(string eventName)
+        public InterceptEventAttribute(string eventName)
         {
             this.EventName = eventName;
         }
