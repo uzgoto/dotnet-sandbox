@@ -11,50 +11,46 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
     internal class Interceptor
     {
         private static FieldInfo EventClickField =>
-           typeof(Control).GetField("EventClick", BindingFlags.NonPublic | BindingFlags.Static);
-        private static EventInfo ControlClickEvent => typeof(Control).GetEvent("Click");
+            typeof(Control).GetField("EventClick", BindingFlags.NonPublic | BindingFlags.Static);
+        private static EventInfo ControlClickEvent =>
+            typeof(Control).GetEvent("Click");
         private static PropertyInfo ControlEventsProperty =>
             typeof(Control).GetProperty("Events", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private static Dictionary<Control, List<Delegate>> OriginalDelegates { get; set; }
-
         private MethodInfo InterceptMethod { get; set; }
+        private Dictionary<Control, List<Delegate>> OriginalDelegates { get; set; }
 
         private Interceptor() { }
 
-        public static Interceptor Create(EventHandler handler)
+        public static Interceptor Create(IEnumerable<Control> targetControls, EventHandler handler)
         {
             return
                 new Interceptor()
                 {
                     InterceptMethod = handler.GetMethodInfo(),
+                    OriginalDelegates = targetControls.ToDictionary(control => control, _ => new List<Delegate>()),
                 };
         }
 
-        public void InterceptClickEvent(Form form, IEnumerable<Control> trrigerControls)
+        public void InterceptClickEvent(Form form)
         {
-            foreach (var control in trrigerControls)
+            foreach (var control in this.OriginalDelegates.Keys)
             {
                 // Get EventHandlerList from Control.Events property.
                 var eventHandlers = ControlEventsProperty.GetValue(control, null) as EventHandlerList;
                 var eventKey = EventClickField.GetValue(control);
-                // Get Click EventHandler.
+                // Get click eventHandler key object.
                 var clickEventHandler = eventHandlers[eventKey];
                 if (clickEventHandler != null)
                 {
                     var clickDelegates = clickEventHandler.GetInvocationList();
-                    if (OriginalDelegates == null) OriginalDelegates = new Dictionary<Control, List<Delegate>>();
-                    if (!OriginalDelegates.ContainsKey(control))
-                    {
-                        OriginalDelegates.Add(control, new List<Delegate>());
-                    }
-                    OriginalDelegates[control].AddRange(clickDelegates);
+                    this.OriginalDelegates[control].AddRange(clickDelegates);
 
                     Array.ForEach(clickDelegates, dlgt => eventHandlers.RemoveHandler(eventKey, dlgt));
 
                     ControlClickEvent.GetAddMethod().Invoke(
                         control,
-                        new object[] { Delegate.CreateDelegate(ControlClickEvent.EventHandlerType, form, InterceptMethod) });
+                        new object[] { Delegate.CreateDelegate(ControlClickEvent.EventHandlerType, form, this.InterceptMethod) });
                 }
             }
         }

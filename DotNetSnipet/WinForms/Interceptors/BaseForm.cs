@@ -19,15 +19,14 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
             this.Size = new System.Drawing.Size(400, 300);
 
             this._sanitizationTargets = this.EnumerateControlsWith<SanitizerTargetAttribute>();
-            this._interceptor = Interceptor.Create(Intercept);
+            var trrigerControls = this.EnumerateControlsWith<InterceptEventAttribute>().Select(elem => elem.control);
+            this._interceptor = Interceptor.Create(trrigerControls, Intercept);
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            this._interceptor.InterceptClickEvent(
-                this,
-                this.EnumerateControlsWith<InterceptEventAttribute>().Select(elem => elem.control));
+            this._interceptor.InterceptClickEvent(this);
         }
 
         private void Intercept(object sender, EventArgs e)
@@ -42,6 +41,8 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
             MessageBox.Show(string.Join(Environment.NewLine, msg));
 
             this._interceptor.Invoke(sender, e);
+
+            MessageBox.Show(string.Join(Environment.NewLine, msg));
         }
 
     }
