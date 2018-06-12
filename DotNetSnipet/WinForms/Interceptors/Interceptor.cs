@@ -9,23 +9,23 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
 {
     internal class Interceptor
     {
-        private static readonly Dictionary<string, string> EventKeys = new Dictionary<string, string>()
-        {
-            // Control
-            {"Click", "EventClick" },
-            {"TextChanged", "EventText" },
-            // Form
-            {"Load", "EVENT_LOAD" },
-            // CheckBox
-            {"CheckedChanged", "EVENT_CHECKEDCHANGED" },
-            {"CheckStateChanged", "EVENT_CHECKSTATECHANGED" },
-            // ListBox
-            {"SelectedIndexChanged", "EVENT_SELECTEDINDEXCHANGED" },
-            {"SelectedValueChanged", "EVENT_SELECTEDVALUECHANGED" },
-            // ComboBox
-            {"TextUpdate", "EVENT_TEXTUPDATE" },
-        };
-
+        private static Dictionary<string, string> EventKeys =>
+            new Dictionary<string, string>()
+            {
+                // Control
+                {"Click", "EventClick" },
+                {"TextChanged", "EventText" },
+                // Form
+                {"Load", "EVENT_LOAD" },
+                // CheckBox
+                {"CheckedChanged", "EVENT_CHECKEDCHANGED" },
+                {"CheckStateChanged", "EVENT_CHECKSTATECHANGED" },
+                // ListBox
+                {"SelectedIndexChanged", "EVENT_SELECTEDINDEXCHANGED" },
+                {"SelectedValueChanged", "EVENT_SELECTEDVALUECHANGED" },
+                // ComboBox
+                {"TextUpdate", "EVENT_TEXTUPDATE" },
+            };
         private static FieldInfo EventClickField =>
             typeof(Control).GetField("EventClick", BindingFlags.NonPublic | BindingFlags.Static);
         private static EventInfo ControlClickEvent =>
