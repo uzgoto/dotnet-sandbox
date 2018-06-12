@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Uzgoto.DotNetSnipet.WinForms.Interceptors.Validators;
 
 namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
 {
@@ -17,49 +16,45 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
         private static PropertyInfo ControlEventsProperty =>
             typeof(Control).GetProperty("Events", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private MethodInfo InterceptMethod { get; set; }
+        private EventHandler PreHandler { get; set; }
+        private EventHandler PostHandler { get; set; }
         private Dictionary<Control, List<Delegate>> OriginalDelegates { get; set; }
 
         private Interceptor() { }
 
-        public static Interceptor Create(IEnumerable<Control> targetControls, EventHandler handler)
+        public static Interceptor Create(IEnumerable<Control> targetControls, EventHandler preHandler, EventHandler postHandler)
         {
             return
                 new Interceptor()
                 {
-                    InterceptMethod = handler.GetMethodInfo(),
                     OriginalDelegates = targetControls.ToDictionary(control => control, _ => new List<Delegate>()),
+                    PreHandler = preHandler,
+                    PostHandler = postHandler,
                 };
         }
 
-        public void InterceptClickEvent(Form form)
+        public void InterceptClickEvent()
         {
             foreach (var control in this.OriginalDelegates.Keys)
             {
                 // Get EventHandlerList from Control.Events property.
                 var eventHandlers = ControlEventsProperty.GetValue(control, null) as EventHandlerList;
-                var eventKey = EventClickField.GetValue(control);
                 // Get click eventHandler key object.
+                var eventKey = EventClickField.GetValue(control);
+
+                // Get eventHandler.
                 var clickEventHandler = eventHandlers[eventKey];
                 if (clickEventHandler != null)
                 {
-                    var clickDelegates = clickEventHandler.GetInvocationList();
-                    this.OriginalDelegates[control].AddRange(clickDelegates);
+                    var delegates = clickEventHandler.GetInvocationList();
+                    this.OriginalDelegates[control].AddRange(delegates);
 
-                    Array.ForEach(clickDelegates, dlgt => eventHandlers.RemoveHandler(eventKey, dlgt));
+                    Array.ForEach(delegates, dlgt => eventHandlers.RemoveHandler(eventKey, dlgt));
 
-                    ControlClickEvent.GetAddMethod().Invoke(
-                        control,
-                        new object[] { Delegate.CreateDelegate(ControlClickEvent.EventHandlerType, form, this.InterceptMethod) });
+                    ControlClickEvent.AddEventHandler(control, this.PreHandler);
+                    ControlClickEvent.AddEventHandler(control, clickEventHandler);
+                    ControlClickEvent.AddEventHandler(control, this.PostHandler);
                 }
-            }
-        }
-
-        public void Invoke(object sender, EventArgs e)
-        {
-            foreach (var dlgt in OriginalDelegates[sender as Control])
-            {
-                dlgt.DynamicInvoke(sender, e);
             }
         }
     }

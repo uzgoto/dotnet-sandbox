@@ -11,12 +11,12 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors.Validators
         public InputType InputType { get; private set; }
         public SanitizerTargetAttribute(InputType inputType)
         {
-            this.InputType = InputType;
+            this.InputType = inputType;
         }
 
         public bool IsValid(InputType inputType, string value)
         {
-            switch (InputType)
+            switch (inputType)
             {
                 case InputType.Alpha:
                     return value.All(c => Alpha.Contains(c));
@@ -28,9 +28,6 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors.Validators
                     throw new ArgumentException(nameof(value));
             }
         }
-        public string Sanitize(string value)
-        {
-            return (IsValid(this.InputType, value)) ? value : null;
-        }
+        public string Sanitize(string value) => (IsValid(this.InputType, value)) ? value : null;
     }
 }

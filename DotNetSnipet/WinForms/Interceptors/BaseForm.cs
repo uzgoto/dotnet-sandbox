@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Windows.Forms;
-using System.Linq;
 using System.Collections.Generic;
-using System.Reflection;
-using Uzgoto.DotNetSnipet.WinForms.Interceptors.Validators;
+using System.Linq;
+using System.Windows.Forms;
 using Uzgoto.DotNetSnipet.WinForms.Extensions;
+using Uzgoto.DotNetSnipet.WinForms.Interceptors.Validators;
 
 namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
 {
-    public partial class BaseForm : Form
+    internal partial class BaseForm : Form
     {
         private Interceptor _interceptor;
         private IEnumerable<(Control control, SanitizerTargetAttribute attribute)> _sanitizationTargets;
+        private Dictionary<Control, string> _tmpValues = new Dictionary<Control, string>();
 
         public BaseForm()
         {
@@ -20,29 +20,33 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
 
             this._sanitizationTargets = this.EnumerateControlsWith<SanitizerTargetAttribute>();
             var trrigerControls = this.EnumerateControlsWith<InterceptEventAttribute>().Select(elem => elem.control);
-            this._interceptor = Interceptor.Create(trrigerControls, Intercept);
+            this._interceptor = Interceptor.Create(trrigerControls, this.PreInvoke, this.PostInvoke);
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            this._interceptor.InterceptClickEvent(this);
+            this._interceptor.InterceptClickEvent();
         }
 
-        private void Intercept(object sender, EventArgs e)
+        private void PreInvoke(object sender, EventArgs e)
         {
-            var msg =
-                this._sanitizationTargets
-                    .Select(target =>
-                        $"{target.control.GetType().Name}, " +
-                        $"{target.control.Text}, " +
-                        $"{target.attribute.InputType.ToString()}, " +
-                        $"Sanitized:{target.attribute.Sanitize(target.control.Text)}");
-            MessageBox.Show(string.Join(Environment.NewLine, msg));
+            foreach (var (control, attribute) in this._sanitizationTargets)
+            {
+                this._tmpValues[control] = control.Text;
+                control.Text = attribute.Sanitize(control.Text);
+            }
+        }
 
-            this._interceptor.Invoke(sender, e);
-
-            MessageBox.Show(string.Join(Environment.NewLine, msg));
+        private void PostInvoke(object sender, EventArgs e)
+        {
+            foreach (var (control, attribute) in this._sanitizationTargets)
+            {
+                if (this._tmpValues.ContainsKey(control))
+                {
+                    control.Text = this._tmpValues[control];
+                }
+            }
         }
 
     }
