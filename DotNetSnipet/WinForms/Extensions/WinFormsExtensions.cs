@@ -8,7 +8,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Extensions
 {
     internal static class WinFormsExtensions
     {
-        public static IEnumerable<(Control control, T attribute)> EnumerateControlsWith<T>(this Form form) where T : Attribute
+        public static IEnumerable<KeyValuePair<Control, T>> EnumerateControlsWith<T>(this Form form) where T : Attribute
         {
             if (form.Controls == null) throw new ArgumentException("This form has no controls.");
 
@@ -23,7 +23,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Extensions
                     var attribute = field.GetCustomAttribute<T>();
                     if (attribute != null)
                     {
-                        yield return (control, attribute);
+                        yield return new KeyValuePair<Control, T>(control, attribute);
                     }
                 }
             }

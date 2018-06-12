@@ -60,7 +60,6 @@
     </Compile>
     <Compile Include="WinForms\Interceptors\InterceptEventAttribute.cs" />
     <Compile Include="WinForms\Interceptors\Interceptor.cs" />
-    <Compile Include="WinForms\Interceptors\Sanitizers\InputType.cs" />
     <Compile Include="WinForms\InterProc\Helper.cs" />
     <Compile Include="WinForms\InterProc\ProcessArgumentAttribute.cs" />
     <Compile Include="Sample\DerivedForm.cs">
