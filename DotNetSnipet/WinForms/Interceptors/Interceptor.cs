@@ -12,6 +12,15 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
         private static Dictionary<string, string> EventKeys =>
             new Dictionary<string, string>()
             {
+                // Control, "Click", "EventClick"
+                // Control, "TextChanged", "EventText"
+                // ComboBox, "SelectedIndexChanged", "EVENT_SELECTEDINDEXCHANGED"
+                // ComboBox, "SelectedItemChanged", "EVENT_SELECTEDITEMCHANGED"
+                // ComboBox, "TextUpdate", "EVENT_TEXTUPDATE"
+                // RadioButton, "CheckedChanged", "EVENT_CHECKEDCHANGED"
+                // ScrollBar, "Scroll", "EVENT_SCROLL"
+                // ScrollBar, "ValueChanged", "EVENT_VALUECHANGED"
+
                 // Control
                 {"Click", "EventClick" },
                 {"TextChanged", "EventText" },

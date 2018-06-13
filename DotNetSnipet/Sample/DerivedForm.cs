@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using Uzgoto.DotNetSnipet.WinForms.Interceptors;
-using Uzgoto.DotNetSnipet.WinForms.Interceptors.Validators;
+using Uzgoto.DotNetSnipet.WinForms.Interceptors.Sanitizers;
 
 namespace Uzgoto.DotNetSnipet.Sample
 {

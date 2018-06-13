@@ -7,7 +7,7 @@ using Uzgoto.DotNetSnipet.WinForms.Interceptors.Sanitizers;
 
 namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
 {
-    internal partial class BaseForm : Form
+    public partial class BaseForm : Form
     {
         // 割り込み処理追加を取り扱う.
         private readonly Interceptor _interceptor;
