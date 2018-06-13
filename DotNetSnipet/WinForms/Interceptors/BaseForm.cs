@@ -34,7 +34,10 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
         {
             base.OnLoad(e);
             // イベントハンドラーの前後に PreInvoke 、直後に PostInvoke 処理を割り込ませます.
-            this._interceptor.InterceptClickEvent();
+            this._interceptor.InterceptEvent(
+                this.EnumerateControlsWith<InterceptEventAttribute>().Select(entry => entry.Key),
+                this.PreInvoke,
+                this.PostInvoke);
         }
 
         /// <summary>

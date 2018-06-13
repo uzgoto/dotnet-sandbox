@@ -50,11 +50,11 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
                 };
         }
 
-        public void InterceptClickEvent()
+        public void InterceptEvent(IEnumerable<Control> controls, EventHandler preHandler, EventHandler postHandler)
         {
-            foreach (var control in this.OriginalDelegates.Keys)
+            foreach (var control in controls)
             {
-                Intercept(control, this.PreHandler, this.PostHandler);
+                Intercept(control, preHandler, postHandler);
             }
         }
 
