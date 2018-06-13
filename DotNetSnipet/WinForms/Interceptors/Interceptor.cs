@@ -54,24 +54,29 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
         {
             foreach (var control in this.OriginalDelegates.Keys)
             {
-                // Get EventHandlerList from Control.Events property.
-                var eventHandlers = ControlEventsProperty.GetValue(control, null) as EventHandlerList;
-                // Get click eventHandler key object.
-                var eventKey = EventClickField.GetValue(control);
+                Intercept(control, this.PreHandler, this.PostHandler);
+            }
+        }
 
-                // Get eventHandler.
-                var clickEventHandler = eventHandlers[eventKey];
-                if (clickEventHandler != null)
-                {
-                    var delegates = clickEventHandler.GetInvocationList();
-                    this.OriginalDelegates[control].AddRange(delegates);
+        private void Intercept(Control control, EventHandler preHandler, EventHandler postHandler)
+        {
+            // Get EventHandlerList from Control.Events property.
+            var eventHandlers = ControlEventsProperty.GetValue(control, null) as EventHandlerList;
+            // Get click eventHandler key object.
+            var eventKey = EventClickField.GetValue(control);
 
-                    Array.ForEach(delegates, dlgt => eventHandlers.RemoveHandler(eventKey, dlgt));
+            // Get eventHandler.
+            var clickEventHandler = eventHandlers[eventKey];
+            if (clickEventHandler != null)
+            {
+                var delegates = clickEventHandler.GetInvocationList();
+                this.OriginalDelegates[control].AddRange(delegates);
 
-                    ControlClickEvent.AddEventHandler(control, this.PreHandler);
-                    ControlClickEvent.AddEventHandler(control, clickEventHandler);
-                    ControlClickEvent.AddEventHandler(control, this.PostHandler);
-                }
+                Array.ForEach(delegates, dlgt => eventHandlers.RemoveHandler(eventKey, dlgt));
+
+                ControlClickEvent.AddEventHandler(control, preHandler);
+                ControlClickEvent.AddEventHandler(control, clickEventHandler);
+                ControlClickEvent.AddEventHandler(control, postHandler);
             }
         }
     }
