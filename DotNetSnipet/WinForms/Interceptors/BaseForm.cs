@@ -10,9 +10,11 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
     public partial class BaseForm : Form
     {
         // 割り込み処理追加を取り扱う.
-        private readonly Interceptor _interceptor;
+        private readonly IEnumerable<IEventInterceptor<Control>> _interceptors;
         // 入力値無害化対象のコントロールと属性のペア.
-        private readonly IEnumerable<KeyValuePair<Control, SanitizerTargetAttribute>> _sanitizationTargets;
+        private readonly IEnumerable<KeyValuePair<Control, SanitizerTargetAttribute>> _targets;
+        // イベント割込み処理対象のコントロール
+        private readonly IEnumerable<KeyValuePair<Control, InterceptEventAttribute>> _trrigers;
         // 元の入力値退避用.
         private readonly Dictionary<Control, string> _tmpValues;
 
@@ -21,23 +23,21 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Size = new System.Drawing.Size(400, 300);
 
-            this._sanitizationTargets = this.EnumerateControlsWith<SanitizerTargetAttribute>();
-            this._tmpValues = this._sanitizationTargets.ToDictionary(entry => entry.Key, _ => string.Empty);
-            this._interceptor =
-                Interceptor.Create(
-                    this.EnumerateControlsWith<InterceptEventAttribute>().Select(entry => entry.Key),
-                    this.PreInvoke,
-                    this.PostInvoke);
+            this._targets = this.EnumerateControlsWith<SanitizerTargetAttribute>();
+            this._trrigers = this.EnumerateControlsWith<InterceptEventAttribute>();
+            this._interceptors =
+                this._trrigers.Select(tr => ControlEventInterceptor.Create(tr.Key, tr.Value.EventName));
+            this._tmpValues = this._targets.ToDictionary(entry => entry.Key, _ => string.Empty);
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
             // イベントハンドラーの前後に PreInvoke 、直後に PostInvoke 処理を割り込ませます.
-            this._interceptor.InterceptEvent(
-                this.EnumerateControlsWith<InterceptEventAttribute>().Select(entry => entry.Key),
-                this.PreInvoke,
-                this.PostInvoke);
+            foreach (var interceptor in this._interceptors)
+            {
+                interceptor.Intercept(this.PreInvoke, this.PostInvoke);
+            }
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
         /// <param name="e"></param>
         private void PreInvoke(object sender, EventArgs e)
         {
-            foreach (var entry in this._sanitizationTargets)
+            foreach (var entry in this._targets)
             {
                 var control = entry.Key;
                 var attribute = entry.Value;
@@ -64,7 +64,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
         /// <param name="e"></param>
         private void PostInvoke(object sender, EventArgs e)
         {
-            foreach (var entry in this._sanitizationTargets)
+            foreach (var entry in this._targets)
             {
                 var control = entry.Key;
                 var attribute = entry.Value;
