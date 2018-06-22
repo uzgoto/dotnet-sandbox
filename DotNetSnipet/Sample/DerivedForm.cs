@@ -7,11 +7,14 @@ namespace Uzgoto.DotNetSnipet.Sample
 {
     public class DerivedForm : BaseForm
     {
-        [SanitizerTargetAttribute(InputType.Alpha)]
+        [SanitizerTarget(InputType.Alpha)]
         private TextBox textbox1 = new TextBox();
-        [SanitizerTargetAttribute(InputType.Numeric)]
+        [SanitizerTarget(InputType.Numeric)]
         private TextBox textbox2 = new TextBox();
         private TextBox textbox3 = new TextBox();
+        private GroupBox groupBox = new GroupBox();
+        [SanitizerTarget(InputType.Alpha)]
+        private TextBox textbox4 = new TextBox();
         private Label label1 = new Label();
         [InterceptEvent("Click")]
         private Button button1 = new Button();
@@ -21,6 +24,8 @@ namespace Uzgoto.DotNetSnipet.Sample
             this.textbox1.Text = "a";
             this.textbox2.Text = "1";
             this.textbox3.Text = "b2";
+            this.textbox4.Text = "32";
+            this.groupBox.Dock = DockStyle.Top;
             this.textbox3.Dock = DockStyle.Top;
             this.textbox2.Dock = DockStyle.Top;
             this.textbox1.Dock = DockStyle.Top;
@@ -28,11 +33,17 @@ namespace Uzgoto.DotNetSnipet.Sample
             this.label1.Dock = DockStyle.Bottom;
             this.button1.Dock = DockStyle.Bottom;
             this.button1.Text = "Click";
+
+            this.SuspendLayout();
+            this.groupBox.Controls.Add(textbox4);
+
             this.Controls.Add(textbox1);
             this.Controls.Add(textbox2);
             this.Controls.Add(textbox3);
+            this.Controls.Add(groupBox);
             this.Controls.Add(label1);
             this.Controls.Add(button1);
+            this.ResumeLayout();
 
             this.button1.Click += Button1_Click;
         }

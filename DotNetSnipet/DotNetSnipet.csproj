@@ -58,9 +58,9 @@
     <Compile Include="WinForms\Interceptors\BaseForm.Designer.cs">
       <DependentUpon>BaseForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="WinForms\Interceptors\IEventInterceptor.cs" />
+    <Compile Include="WinForms\Interceptors\IInterceptor.cs" />
     <Compile Include="WinForms\Interceptors\InterceptEventAttribute.cs" />
-    <Compile Include="WinForms\Interceptors\ControlEventInterceptor.cs" />
+    <Compile Include="WinForms\Interceptors\Interceptor.cs" />
     <Compile Include="WinForms\InterProc\Helper.cs" />
     <Compile Include="WinForms\InterProc\ProcessArgumentAttribute.cs" />
     <Compile Include="Sample\DerivedForm.cs">

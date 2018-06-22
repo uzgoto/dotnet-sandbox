@@ -14,9 +14,9 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors.Sanitizers
             this.InputType = inputType;
         }
 
-        public bool IsValid(InputType inputType, string value)
+        public bool IsValid(string value)
         {
-            switch (inputType)
+            switch (this.InputType)
             {
                 case InputType.Alpha:
                     return value.All(c => Alpha.Contains(c));
@@ -28,7 +28,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors.Sanitizers
                     return true;
             }
         }
-        public string Sanitize(string value) => (IsValid(this.InputType, value)) ? value : null;
+        public string Sanitize(string value) => (IsValid(value)) ? value : null;
     }
 
     [Flags]
