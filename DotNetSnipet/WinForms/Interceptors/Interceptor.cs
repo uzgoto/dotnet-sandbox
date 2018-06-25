@@ -26,6 +26,8 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
                 { "Scroll", "EVENT_SCROLL" },
                 { "ValueChanged", "EVENT_VALUECHANGED" },
             };
+
+        // Cached general event info.
         private static EventInfo ClickEvent = typeof(Control).GetEvent("Click");
         private static FieldInfo ClickEventKey =
             typeof(Control).GetField("EventClick", BindingFlags.NonPublic | BindingFlags.Static);

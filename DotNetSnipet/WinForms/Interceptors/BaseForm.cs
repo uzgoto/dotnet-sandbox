@@ -10,7 +10,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
     public partial class BaseForm : Form
     {
         // For cached user inputted values.
-        private Dictionary<Control, string> _tmpValues;
+        private Dictionary<Control, string> _tmpValues = new Dictionary<Control, string>();
 
         public BaseForm()
         {
@@ -23,7 +23,7 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
             base.OnLoad(e);
 
             // Interrupt pre/post eventhandler
-            foreach (var (control, attribute) in this.EnumerateControlsWith<InterceptEventAttribute>())
+            foreach (var (control, attribute) in this.EnumerateControlsWith<InterceptAttribute>())
             {
                 if(control is Button button)
                 {
@@ -47,12 +47,11 @@ namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
         /// <param name="e"></param>
         private void PreInvoke(object sender, EventArgs e)
         {
-            foreach (var (control, attribute) in this.EnumerateControlsWith<SanitizerTargetAttribute>())
+            foreach (var (control, attribute) in this.EnumerateControlsWith<SanitizeAttribute>())
             {
                 // Sanitize if user input is invalid.
                 if(!attribute.IsValid(control.Text))
                 {
-                    this._tmpValues = this._tmpValues ?? new Dictionary<Control, string>();
                     this._tmpValues.Add(control, control.Text);
                     control.Text = attribute.Sanitize(control.Text);
                     MessageBox.Show($"{this._tmpValues[control]} is sanitized {control.Text}");

@@ -7,16 +7,16 @@ namespace Uzgoto.DotNetSnipet.Sample
 {
     public class DerivedForm : BaseForm
     {
-        [SanitizerTarget(InputType.Alpha)]
+        [Sanitize(InputType.Alpha)]
         private TextBox textbox1 = new TextBox();
-        [SanitizerTarget(InputType.Numeric)]
+        [Sanitize(InputType.Numeric)]
         private TextBox textbox2 = new TextBox();
         private TextBox textbox3 = new TextBox();
         private GroupBox groupBox = new GroupBox();
-        [SanitizerTarget(InputType.Alpha)]
+        [Sanitize(InputType.Alpha)]
         private TextBox textbox4 = new TextBox();
         private Label label1 = new Label();
-        [InterceptEvent("Click")]
+        [Intercept("Click")]
         private Button button1 = new Button();
 
         public DerivedForm() : base()
