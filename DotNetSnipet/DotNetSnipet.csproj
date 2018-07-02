@@ -52,10 +52,10 @@
     <Compile Include="Repository\Repository.cs" />
     <Compile Include="Sample\Program.cs" />
     <Compile Include="WinForms\Extensions\WinFormsExtensions.cs" />
-    <Compile Include="WinForms\Interceptors\BaseForm.cs">
+    <Compile Include="WinForms\BaseForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="WinForms\Interceptors\BaseForm.Designer.cs">
+    <Compile Include="WinForms\BaseForm.Designer.cs">
       <DependentUpon>BaseForm.cs</DependentUpon>
     </Compile>
     <Compile Include="WinForms\Interceptors\IInterceptor.cs" />

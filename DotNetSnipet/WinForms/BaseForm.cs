@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Uzgoto.DotNetSnipet.WinForms.Extensions;
+using Uzgoto.DotNetSnipet.WinForms.Interceptors;
 using Uzgoto.DotNetSnipet.WinForms.Interceptors.Sanitizers;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
+namespace Uzgoto.DotNetSnipet.WinForms
 {
     public partial class BaseForm : Form
     {

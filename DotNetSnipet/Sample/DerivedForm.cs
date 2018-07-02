@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Uzgoto.DotNetSnipet.WinForms;
 using Uzgoto.DotNetSnipet.WinForms.Interceptors;
 using Uzgoto.DotNetSnipet.WinForms.Interceptors.Sanitizers;
 
