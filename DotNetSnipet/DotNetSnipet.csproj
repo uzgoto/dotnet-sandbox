@@ -69,9 +69,15 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="WinForms\Interceptors\Sanitizers\SanitizeAttribute.cs" />
+    <Compile Include="WinForms\Messages\IMessage.cs" />
+    <Compile Include="WinForms\Messages\Level.cs" />
+    <Compile Include="WinForms\Messages\Message.cs" />
+    <Compile Include="WinForms\Messages\MessageProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
