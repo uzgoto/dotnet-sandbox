@@ -11,12 +11,12 @@ namespace Uzgoto.DotNetSnipet.WinForms.Messages
     {
         public static IEnumerable<Message> Load()
         {
-            var settings = ConfigurationManager.GetSection("settings") as SettingsSection;
+            var settings = ConfigurationManager.GetSection("applicationSettings") as ApplicationSettings;
             return settings?.Messages?.OfType<Message>() ?? Enumerable.Empty<Message>();
         }
     }
 
-    public class SettingsSection : ConfigurationSection
+    public class ApplicationSettings : ConfigurationSection
     {
         [ConfigurationProperty("messages")]
         [ConfigurationCollection(typeof(MessageCollection), AddItemName = "add", ClearItemsName = "clear", RemoveItemName = "remove")]
