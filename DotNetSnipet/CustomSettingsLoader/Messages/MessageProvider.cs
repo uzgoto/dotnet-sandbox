@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Messages
+namespace Uzgoto.DotNetSnipet.CustomSettingsLoader.Messages
 {
     class MessageProvider
     {
