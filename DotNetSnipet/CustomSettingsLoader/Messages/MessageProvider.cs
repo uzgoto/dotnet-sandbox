@@ -19,7 +19,7 @@ namespace Uzgoto.DotNetSnipet.CustomSettingsLoader.Messages
     public class ApplicationSettings : ConfigurationSection
     {
         [ConfigurationProperty("messages")]
-        [ConfigurationCollection(typeof(MessageCollection), AddItemName = "add", ClearItemsName = "clear", RemoveItemName = "remove")]
+        [ConfigurationCollection(typeof(MessageCollection))]
         public MessageCollection Messages => this["messages"] as MessageCollection;
     }
 
