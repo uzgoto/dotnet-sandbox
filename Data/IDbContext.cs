@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Uzgoto.DotNetSnipet.Data
 {
-    interface IDbContext
+    interface IDbContext : IDisposable
     {
         IDataReader ExecuteReader(string commandText, params IDataParameter[] sqlParameters);
         IEnumerable<TEntity> ExecuteReaderAsEnumerable<TEntity>(string commandText, params IDataParameter[] sqlParameters);

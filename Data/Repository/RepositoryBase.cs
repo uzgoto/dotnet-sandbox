@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Uzgoto.DotNetSnipet.Repository
 {
-    public abstract class Repository<TEntity>
+    public abstract class RepositoryBase<TEntity>
     {
         protected IEnumerable<TEntity> EnumerateDataReader(IDbCommand command)
         {

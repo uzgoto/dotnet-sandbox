@@ -4,9 +4,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Uzgoto.DotNetSnipet.Data
 {
@@ -14,7 +11,7 @@ namespace Uzgoto.DotNetSnipet.Data
     {
         private readonly IDbConnection _connection;
 
-        public DbContext Create()
+        public static DbContext Create()
         {
             const string CONNECTION_NAME = "ConnectionName";
             var connectionName =
@@ -42,7 +39,7 @@ namespace Uzgoto.DotNetSnipet.Data
             this._connection.ConnectionString = conStr.ConnectionString;
         }
 
-        private void OpenIfClosed()
+        public void OpenIfClosed()
         {
             if (this._connection.State == ConnectionState.Closed || this._connection.State == ConnectionState.Broken)
             {
@@ -138,6 +135,38 @@ namespace Uzgoto.DotNetSnipet.Data
         public TResult ExecuteScalar<TResult>(string commandText, params IDataParameter[] sqlParameters)
         {
             throw new NotImplementedException();
+        }
+        #endregion
+
+        #region IDisposable Support
+        private bool disposedValue = false; // 重複する呼び出しを検出するには
+
+        void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    this._connection?.Dispose();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: 上の Dispose(bool disposing) にアンマネージ リソースを解放するコードが含まれる場合にのみ、ファイナライザーをオーバーライドします。
+        // ~DbContext() {
+        //   // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
+        //   Dispose(false);
+        // }
+
+        // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
+        public void Dispose()
+        {
+            // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
+            Dispose(true);
+            // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
+            // GC.SuppressFinalize(this);
         }
         #endregion
     }
