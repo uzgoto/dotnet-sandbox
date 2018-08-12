@@ -5,9 +5,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C119CE01-94DE-4B9A-92B8-C27D83821AC3}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>Uzgoto.DotNetSnipet.CustomSettingsLoader</RootNamespace>
-    <AssemblyName>CustomSettingsLoader</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Uzgoto.DotNetSnipet.Settings</RootNamespace>
+    <AssemblyName>Settings</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -46,10 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationSettings.cs" />
+    <Compile Include="Messages\MessageCollection.cs" />
     <Compile Include="Messages\IMessage.cs" />
     <Compile Include="Messages\Level.cs" />
     <Compile Include="Messages\Message.cs" />
-    <Compile Include="Messages\MessageProvider.cs" />
+    <Compile Include="MessageProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

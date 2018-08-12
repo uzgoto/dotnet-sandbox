@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Uzgoto.DotNetSnipet.CustomSettingsLoader.Properties {
+namespace Uzgoto.DotNetSnipet.Settings.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

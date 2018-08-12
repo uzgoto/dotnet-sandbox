@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Uzgoto.DotNetSnipet.CustomSettingsLoader.Properties {
+namespace Uzgoto.DotNetSnipet.Settings.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Uzgoto.DotNetSnipet.CustomSettingsLoader.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Uzgoto.DotNetSnipet.CustomSettingsLoader.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Uzgoto.DotNetSnipet.Settings.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

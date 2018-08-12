@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetSnipet", "DotNetSnipe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serivces", "Services\Serivces.csproj", "{664DBA0D-5ADB-43C0-A86D-52C71005C0E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomSettingsLoader", "CustomSettingsLoader\CustomSettingsLoader.csproj", "{C119CE01-94DE-4B9A-92B8-C27D83821AC3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings", "Settings\Settings.csproj", "{C119CE01-94DE-4B9A-92B8-C27D83821AC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Uzgoto.DotNetSnipet.CustomSettingsLoader.Messages
+namespace Uzgoto.DotNetSnipet.Settings.Messages
 {
     interface IMessage
     {

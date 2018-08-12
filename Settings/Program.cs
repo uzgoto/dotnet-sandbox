@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Uzgoto.DotNetSnipet.CustomSettingsLoader.Messages;
 
-namespace CustomSettingsLoader
+namespace Uzgoto.DotNetSnipet.Settings
 {
     static class Program
     {

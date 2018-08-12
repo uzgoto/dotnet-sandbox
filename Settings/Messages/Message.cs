@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Uzgoto.DotNetSnipet.CustomSettingsLoader.Messages
+namespace Uzgoto.DotNetSnipet.Settings.Messages
 {
     public class Message : ConfigurationElement, IMessage
     {
