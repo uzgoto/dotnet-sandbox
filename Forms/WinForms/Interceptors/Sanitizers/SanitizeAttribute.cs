@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Linq;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Interceptors.Sanitizers
+namespace Uzgoto.DotNetSnipet.Forms.WinForms.Interceptors.Sanitizers
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public sealed class SanitizeAttribute : SanitizeBaseAttribute
     {
-        private static readonly string Alpha = @"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
         public override InputType InputType { get; }
         public SanitizeAttribute(InputType inputType)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Uzgoto.DotNetSnipet.WinForms.InterProc
+namespace Uzgoto.DotNetSnipet.Forms.WinForms.InterProc
 {
     public sealed class Helper<TArgument> where TArgument : struct
     {

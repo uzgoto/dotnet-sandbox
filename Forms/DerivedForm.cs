@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows.Forms;
-using Uzgoto.DotNetSnipet.WinForms;
-using Uzgoto.DotNetSnipet.WinForms.Interceptors;
-using Uzgoto.DotNetSnipet.WinForms.Interceptors.Sanitizers;
+using Uzgoto.DotNetSnipet.Forms.WinForms;
+using Uzgoto.DotNetSnipet.Forms.WinForms.Interceptors;
+using Uzgoto.DotNetSnipet.Forms.WinForms.Interceptors.Sanitizers;
 
-namespace Uzgoto.DotNetSnipet.Sample
+namespace Uzgoto.DotNetSnipet.Forms
 {
     public class DerivedForm : BaseForm
     {

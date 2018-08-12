@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
+namespace Uzgoto.DotNetSnipet.Forms.WinForms.Interceptors
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
     public sealed class InterceptAttribute : Attribute

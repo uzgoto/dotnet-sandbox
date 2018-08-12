@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Uzgoto.DotNetSnipet.Sample
+namespace Uzgoto.DotNetSnipet.Forms
 {
     public class Program
     {

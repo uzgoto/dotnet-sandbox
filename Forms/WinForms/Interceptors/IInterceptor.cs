@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
+namespace Uzgoto.DotNetSnipet.Forms.WinForms.Interceptors
 {
     public interface IInterceptor<T>
     {

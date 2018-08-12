@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Uzgoto.DotNetSnipet.WinForms.InterProc
+namespace Uzgoto.DotNetSnipet.Forms.WinForms.InterProc
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public sealed class ProcessArgumentAttribute : Attribute

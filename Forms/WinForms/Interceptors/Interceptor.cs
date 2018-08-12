@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Interceptors
+namespace Uzgoto.DotNetSnipet.Forms.WinForms.Interceptors
 {
     internal sealed class Interceptor<T> : IInterceptor<T> where T : Control
     {

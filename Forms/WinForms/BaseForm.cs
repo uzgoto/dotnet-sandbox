@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
-using Uzgoto.DotNetSnipet.WinForms.Extensions;
-using Uzgoto.DotNetSnipet.WinForms.Interceptors;
-using Uzgoto.DotNetSnipet.WinForms.Interceptors.Sanitizers;
+using Uzgoto.DotNetSnipet.Forms.WinForms.Extensions;
+using Uzgoto.DotNetSnipet.Forms.WinForms.Interceptors;
+using Uzgoto.DotNetSnipet.Forms.WinForms.Interceptors.Sanitizers;
 
-namespace Uzgoto.DotNetSnipet.WinForms
+namespace Uzgoto.DotNetSnipet.Forms.WinForms
 {
     public partial class BaseForm : Form
     {

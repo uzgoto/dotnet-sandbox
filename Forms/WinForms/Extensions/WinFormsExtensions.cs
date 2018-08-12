@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace Uzgoto.DotNetSnipet.WinForms.Extensions
+namespace Uzgoto.DotNetSnipet.Forms.WinForms.Extensions
 {
     internal static class WinFormsExtensions
     {

@@ -1,4 +1,4 @@
-﻿namespace Uzgoto.DotNetSnipet.WinForms
+﻿namespace Uzgoto.DotNetSnipet.Forms.WinForms
 {
     partial class BaseForm
     {
