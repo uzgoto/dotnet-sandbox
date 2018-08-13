@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Uzgoto.DotNet.Sandbox.WinApiWrapper
+namespace Uzgoto.Dotnet.Sandbox.Winapi
 {
     internal static class Extensions
     {
@@ -15,6 +15,21 @@ namespace Uzgoto.DotNet.Sandbox.WinApiWrapper
             internal static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
             [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
             internal static extern int GetWindowText(IntPtr hWnd, StringBuilder lpText, int nMaxCount);
+            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            internal static extern bool SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+            internal enum WM
+            {
+                CLOSE = 0x0002,
+                SYSCOMMAND = 0x0112,
+            }
+            internal enum SC
+            {
+                CLOSE = 0xF060
+            }
+
+
         }
 
         internal static IEnumerable<IntPtr> EnumWindowHandles(this IntPtr hWndRoot)
@@ -43,6 +58,12 @@ namespace Uzgoto.DotNet.Sandbox.WinApiWrapper
             var builder = new StringBuilder(256);
             var ret = WinApi.GetWindowText(hWnd, builder, builder.Capacity);
             return builder.ToString();
+        }
+
+        internal static int Close(this IntPtr hWnd)
+        {
+            WinApi.SendMessage(hWnd, (int)WinApi.WM.SYSCOMMAND, (IntPtr)WinApi.SC.CLOSE, IntPtr.Zero);
+            return Marshal.GetLastWin32Error();
         }
     }
 }
