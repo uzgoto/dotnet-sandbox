@@ -8,7 +8,7 @@ using Uzgoto.DotNetSnipet.Settings.Messages;
 
 namespace Uzgoto.DotNetSnipet.Settings
 {
-    class MessageProvider
+    public class MessageProvider
     {
         public static IEnumerable<Message> Load()
         {
