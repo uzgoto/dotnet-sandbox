@@ -47,16 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SafeShutdownableServiceBase.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SafeShutdownableServiceBase.Designer.cs">
-      <DependentUpon>SafeShutdownableServiceBase.cs</DependentUpon>
-    </Compile>
     <Compile Include="SampleService.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SampleServicetmp.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="SampleServiceInstaller.cs">
@@ -65,17 +56,6 @@
     <Compile Include="SampleServiceInstaller.Designer.cs">
       <DependentUpon>SampleServiceInstaller.cs</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="SafeShutdownableServiceBase.resx">
-      <DependentUpon>SafeShutdownableServiceBase.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Settings\Settings.csproj">
-      <Project>{c119ce01-94de-4b9a-92b8-c27d83821ac3}</Project>
-      <Name>Settings</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

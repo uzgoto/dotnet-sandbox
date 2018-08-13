@@ -19,7 +19,7 @@ namespace Uzgoto.DotNetSnipet.Services
             var installer = new ServiceInstaller();
             installer.DelayedAutoStart = true;
             installer.Description = "Description of service.";
-            installer.DisplayName = "DisplayName of service.";
+            installer.DisplayName = "SampleService";
             installer.ServiceName = "SampleService";
             installer.StartType = ServiceStartMode.Automatic;
 
