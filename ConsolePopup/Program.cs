@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using Uzgoto.Dotnet.Sandbox.Winapi;
 
 namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
 {
@@ -20,31 +17,13 @@ namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
             sw.Start();
 
             // Switch 'canConnected' random value asynchronously.
-            Task.Factory.StartNew(() =>
-            {
-                while (true)
-                {
-                    var randomValue = new Random(sw.Elapsed.Milliseconds).Next();
-                    var delaySeconds = randomValue % (60 - MainProcessDelaySeconds) + MainProcessDelaySeconds;
+            SwitchConnectionStatusAsync(sw);
 
-                    Console.WriteLine(LogFormat, "SwitchProc", "begin", "delay", sw.Elapsed, delaySeconds);
-                    Task.Delay(TimeSpan.FromSeconds(delaySeconds)).Wait();
-                    Console.WriteLine(LogFormat, "SwitchProc", "end", "delay", sw.Elapsed, delaySeconds);
-
-                    lock (Lock)
-                    {
-                        Console.WriteLine(LogFormat, "SwitchProc", "begin", "switch", sw.Elapsed, canConnected);
-                        canConnected = delaySeconds % 2 == 0;
-                        Console.WriteLine(LogFormat, "SwitchProc", "end", "switch", sw.Elapsed, canConnected);
-                    }
-                }
-            });
-
-            bool previousConnected = true;
+            var previousConnected = false;
             while (true)
             {
                 bool currentConnected;
-                lock(Lock)
+                lock (Lock)
                 {
                     currentConnected = canConnected;
                 }
@@ -78,6 +57,29 @@ namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
 
                 previousConnected = currentConnected;
             }
+        }
+
+        private static void SwitchConnectionStatusAsync(Stopwatch sw)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                while (true)
+                {
+                    var randomValue = new Random(sw.Elapsed.Milliseconds).Next();
+                    var delaySeconds = randomValue % (30 - MainProcessDelaySeconds) + MainProcessDelaySeconds;
+
+                    Console.WriteLine(LogFormat, "SwitchProc", "begin", "delay", sw.Elapsed, delaySeconds);
+                    Task.Delay(TimeSpan.FromSeconds(delaySeconds)).Wait();
+                    Console.WriteLine(LogFormat, "SwitchProc", "end", "delay", sw.Elapsed, delaySeconds);
+
+                    lock (Lock)
+                    {
+                        Console.WriteLine(LogFormat, "SwitchProc", "begin", "switch", sw.Elapsed, canConnected);
+                        canConnected = delaySeconds % 2 == 0;
+                        Console.WriteLine(LogFormat, "SwitchProc", "end", "switch", sw.Elapsed, canConnected);
+                    }
+                }
+            });
         }
     }
 }
