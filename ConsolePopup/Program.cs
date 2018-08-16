@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Linq;
+using System.IO;
 
 namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
 {
@@ -34,18 +36,22 @@ namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
                     {
                         // Close if any messageboxes showed, and show messagebox asynchronously, by service account.
                         Console.WriteLine(LogFormat, "MainProc", "begin", "open", sw.Elapsed, "Information");
+                        //SystemNotifyDialog.ShowInformationAsync(
+                        //    $"Connection reopened at {DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}",
+                        //    $"{Process.GetCurrentProcess().ProcessName}");
                         SystemNotifyDialog.ShowInformationAsync(
-                            $"Connection reopened at {DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}",
-                            $"{Process.GetCurrentProcess().ProcessName}");
+                            $"Connection reopened at {DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}");
                         Console.WriteLine(LogFormat, "MainProc", "end", "open", sw.Elapsed, "Information");
                     }
                     else
                     {
                         // Close if any messageboxes showed, and show messagebox asynchronously, by service account.
                         Console.WriteLine(LogFormat, "MainProc", "begin", "open", sw.Elapsed, "Warning");
+                        //SystemNotifyDialog.ShowWarningAsync(
+                        //    $"Connection broken at {DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}",
+                        //    $"{Process.GetCurrentProcess().ProcessName}");
                         SystemNotifyDialog.ShowWarningAsync(
-                            $"Connection broken at {DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}",
-                            $"{Process.GetCurrentProcess().ProcessName}");
+                            $"Connection broken at {DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}");
                         Console.WriteLine(LogFormat, "MainProc", "end", "open", sw.Elapsed, "Warning");
                     }
                 }
