@@ -1,4 +1,4 @@
-﻿namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
+﻿namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
     partial class NotifyService
     {

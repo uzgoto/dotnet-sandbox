@@ -6,14 +6,14 @@ using System.IO;
 using System.Text;
 using System.Reflection;
 
-namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
+namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
     public class Program
     {
         private const int MainProcessDelaySeconds = 5;
 
         private static readonly object LockConnectable = new object();
-        private static readonly string LogFormat = "[{0,-10}][{1,-5}][{2,-5}] Elapsed:{3:hh\\:mm\\:ss\\.ffffff} {4}";
+        private static readonly string LogFormat = "{0:yyyy/MM/dd hh\\:mm\\:ss\\.ffffff} [{1,-10}][{2,-5}][{3,-5}] {4}";
         private static readonly Stopwatch StopWatch = new Stopwatch();
         private static readonly object LockLogFile = new object();
         private static readonly string LogPath =
@@ -62,15 +62,15 @@ namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
             {
                 while (true)
                 {
-                    Console.WriteLine(LogFormat, "SwitchProc", "begin", "delay", StopWatch.Elapsed, delaySeconds);
+                    WriteLogFile(LogFormat, DateTime.Now, "SwitchProc", "begin", "delay", delaySeconds);
                     Task.Delay(TimeSpan.FromSeconds(delaySeconds)).Wait();
-                    Console.WriteLine(LogFormat, "SwitchProc", "end", "delay", StopWatch.Elapsed, delaySeconds);
+                    WriteLogFile(LogFormat, DateTime.Now, "SwitchProc", "end", "delay", delaySeconds);
 
                     lock (LockConnectable)
                     {
-                        Console.WriteLine(LogFormat, "SwitchProc", "begin", "switch", StopWatch.Elapsed, Connectable);
+                        WriteLogFile(LogFormat, DateTime.Now, "SwitchProc", "begin", "switch", Connectable);
                         Connectable = !Connectable;
-                        Console.WriteLine(LogFormat, "SwitchProc", "end", "switch", StopWatch.Elapsed, Connectable);
+                        WriteLogFile(LogFormat, DateTime.Now, "SwitchProc", "end", "switch", Connectable);
                     }
                 }
             });
@@ -78,14 +78,14 @@ namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
 
         private static void Close()
         {
-            Console.WriteLine(LogFormat, "MainProc", "begin", "close", StopWatch.Elapsed, string.Empty);
+            WriteLogFile(LogFormat, DateTime.Now, "MainProc", "begin", "close", string.Empty);
             SystemNotifyDialog.Close();
-            Console.WriteLine(LogFormat, "MainProc", "end", "close", StopWatch.Elapsed, string.Empty);
+            WriteLogFile(LogFormat, DateTime.Now, "MainProc", "end", "close", string.Empty);
         }
 
         private static void Open(Level level)
         {
-            Console.WriteLine(LogFormat, "MainProc", "begin", "open", StopWatch.Elapsed, level);
+            WriteLogFile(LogFormat, DateTime.Now, "MainProc", "begin", "open", level);
             switch (level)
             {
                 case Level.Information:
@@ -105,7 +105,7 @@ namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
                 default:
                     break;
             }
-            Console.WriteLine(LogFormat, "MainProc", "end", "open", StopWatch.Elapsed, level);
+            WriteLogFile(LogFormat, DateTime.Now, "MainProc", "end", "open", level);
         }
 
         private enum Level

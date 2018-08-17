@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{CD451763-1AD7-466F-A419-3F153ADDD04B}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Uzgoto.Dotnet.Sandbox.ConsolePopup</RootNamespace>
-    <AssemblyName>ConsolePopup</AssemblyName>
+    <RootNamespace>Uzgoto.Dotnet.Sandbox.NotifyService</RootNamespace>
+    <AssemblyName>NotifyService</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Uzgoto.Dotnet.Sandbox.Winapi;
 
-namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
+namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
     public static class SystemNotifyDialog
     {
