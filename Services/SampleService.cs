@@ -1,83 +1,92 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Uzgoto.DotNetSnipet.Services
 {
-    public class SampleService : ServiceBase
+    partial class SampleService : ServiceBase
     {
-        public Predicate<string[]> ValidateArguments { get; protected set; }
-        public object Lock { get; private set; }
+        private const int SERVICE_ACCEPT_PRESHUTDOWN = 0x0100;
+        private const int SERVICE_CONTROL_PRESHUTDOWN = 0x000f;
 
-        public static void Main(string[] args)
+        private static readonly object LockLogFile = new object();
+        private static readonly string LogDirectory =
+            Path.Combine(
+                Assembly.GetExecutingAssembly().Location,
+                @"..\..\Logs");
+        private static readonly string ServiceLogFile = "Service.log";
+        private static readonly string ConsoleLogFile = "Console.log";
+
+        private string LogPath = Path.Combine(LogDirectory, ServiceLogFile);
+
+        public SampleService()
         {
-            Run(new SampleService());
+            this.InitializeComponent();
+
+            var field =
+                typeof(ServiceBase).GetField("acceptedCommands",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            var value = (int)field.GetValue(this);
+            field.SetValue(this, value | SERVICE_ACCEPT_PRESHUTDOWN);
+
+            if(!Directory.Exists(LogDirectory))
+            {
+                Directory.CreateDirectory(LogDirectory);
+            }
         }
 
-        public SampleService() : base()
+        internal void OnStartByConsole(string[] args)
         {
-            this.AutoLog = false;
-            this.CanPauseAndContinue = false;
-            this.CanShutdown = true;
-            this.CanStop = true;
-            this.ServiceName = nameof(SampleService);
-            this.Lock = new object();
-            this.ValidateArguments = vs => vs.Length == 0;
+            this.LogPath = this.LogPath.Replace(ServiceLogFile, ConsoleLogFile);
+            this.OnStart(args);
+        }
+
+        internal void OnStopByConsole()
+        {
+            this.OnStop();
         }
 
         protected override void OnStart(string[] args)
         {
-            if (!this.ValidateArguments(args))
-            {
-                this.WriteLog($"{this.ServiceName}: 起動パラメータが異常です。", string.Join(" ", args));
-                return;
-            }
-            base.OnStart(args);
-            this.WriteLog($"{this.ServiceName}: 起動しました。", string.Join(" ", args));
-
-            while (true)
-            {
-                lock (this.Lock)
-                {
-                    var lastLine = "0";
-                    try
-                    {
-                        lastLine = File.ReadLines(@"%USERPROFILE%/Desktop/test.txt", Encoding.Default).Last();
-                    }
-                    catch { }
-                    int.TryParse(lastLine, out var lastValue);
-                    var values =
-                        Enumerable.Range(0, 999)
-                            .Select(idx => $"{decimal.Truncate((lastValue + 1) / 1000).ToString("000")}{idx.ToString("000")}");
-                    File.AppendAllLines(@"%USERPROFILE%/Desktop/test.txt", values, Encoding.Default);
-                }
-            }
+            this.WriteLogFile("Start service.");
         }
 
         protected override void OnStop()
         {
-            base.OnStop();
-            this.WriteLog($"{this.ServiceName}: 停止しました。");
+            this.WriteLogFile("Stop service.");
         }
 
         protected override void OnShutdown()
         {
-            this.WriteLog($"{this.ServiceName}: シャットダウンを待機します。");
-            lock (this.Lock)
-            {
-                this.OnStop();
-
-                this.WriteLog($"{this.ServiceName}: シャットダウンします。");
-                base.OnShutdown();
-            }
+            this.WriteLogFile("Shutdown service.");
         }
 
-        protected void WriteLog(params string[] messages)
+        protected override void OnCustomCommand(int command)
         {
-            var path = $"%USERPROFILE%/Desktop/{DateTime.UtcNow.ToString("yyyyMMdd")}_{this.ServiceName}.log";
-            File.AppendAllLines(path, messages, Encoding.Default);
+            if (command == SERVICE_CONTROL_PRESHUTDOWN)
+            {
+                this.WriteLogFile("Pre shutdown.");
+                this.OnStop();
+                return;
+            }
+
+            base.OnCustomCommand(command);
+        }
+
+        private void WriteLogFile(string contents)
+        {
+            lock(LockLogFile)
+            {
+                File.AppendAllText(this.LogPath, contents, Encoding.Default);
+            }
         }
     }
 }

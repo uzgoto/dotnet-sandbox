@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 namespace Uzgoto.DotNetSnipet.Services
 {
     [RunInstaller(true)]
-    public partial class SampleServiceInstaller : Installer
+    public partial class SampleServiceTmpInstaller : Installer
     {
-        public SampleServiceInstaller()
+        public SampleServiceTmpInstaller()
         {
             InitializeComponent();
 

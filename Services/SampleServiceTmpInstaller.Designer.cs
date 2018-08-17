@@ -1,6 +1,6 @@
 ﻿namespace Uzgoto.DotNetSnipet.Services
 {
-    partial class SampleServiceInstaller
+    partial class SampleServiceTmpInstaller
     {
         /// <summary>
         /// 必要なデザイナー変数です。
