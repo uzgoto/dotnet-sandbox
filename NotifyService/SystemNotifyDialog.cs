@@ -14,51 +14,37 @@ namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
     {
         private static readonly MessageBoxButtons Buttons = MessageBoxButtons.OK;
         private static readonly MessageBoxDefaultButton DefaultButton = MessageBoxDefaultButton.Button1;
-        private static readonly MessageBoxOptions Options = MessageBoxOptions.ServiceNotification;
+        private static readonly MessageBoxOptions Options =
+            MessageBoxOptions.ServiceNotification | MessageBoxOptions.DefaultDesktopOnly;
 
         public static Task<DialogResult> ShowInformationAsync(string text, string caption)
         {
-            CloseAllDialogs();
             return
                 Task.Factory.StartNew(() =>
                     MessageBox.Show(text, caption, Buttons, MessageBoxIcon.Information, DefaultButton, Options)
                 );
         }
         
-        public static Task ShowInformationAsync(string text)
-        {
-            CloseAllDialogs();
-            return
-                Task.Factory.StartNew(() =>
-                {
-                    var sysRoot = Environment.GetEnvironmentVariable("SystemRoot");
-                    var msgPath = Path.Combine(sysRoot, @"Sysnative\msg.exe");
-                    var info = new ProcessStartInfo()
-                    {
-                        FileName = msgPath,
-                        Arguments = @"* /time:0 " + text,
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        Verb = "RunAs",
-
-                    };
-                    var proc = Process.Start(info);
-                });
-        }
-
         public static Task<DialogResult> ShowWarningAsync(string text, string caption)
         {
-            CloseAllDialogs();
             return
                 Task.Factory.StartNew(() =>
                     MessageBox.Show(text, caption, Buttons, MessageBoxIcon.Warning, DefaultButton, Options)
                 );
         }
 
-        public static Task ShowWarningAsync(string text)
+        public static async void Show(string text)
         {
-            CloseAllDialogs();
-            Array.ForEach(Dialog.EnumerateChilds().ToArray(), d => d.Close());
+            await RunMsgExe(text);
+        }
+
+        public static void Close()
+        {
+            Array.ForEach(Dialog.Enumerate().ToArray(), d => d.Close());
+        }
+
+        private static Task<Process> RunMsgExe(string text)
+        {
             return
                 Task.Factory.StartNew(() =>
                 {
@@ -71,15 +57,9 @@ namespace Uzgoto.Dotnet.Sandbox.ConsolePopup
                         CreateNoWindow = true,
                         UseShellExecute = false,
                         Verb = "RunAs",
-
                     };
-                    var proc = Process.Start(info);
+                    return Process.Start(info);
                 });
-        }
-
-        private static void CloseAllDialogs()
-        {
-            Array.ForEach(Dialog.Enumerate().ToArray(), d => d.Close());
         }
     }
 }

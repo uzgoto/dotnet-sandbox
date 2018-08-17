@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forms", "Forms\Forms.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{5411DE7C-5EC0-40B1-AC88-FA74A88BC033}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsolePopup", "ConsolePopup\ConsolePopup.csproj", "{CD451763-1AD7-466F-A419-3F153ADDD04B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotifyService", "NotifyService\NotifyService.csproj", "{CD451763-1AD7-466F-A419-3F153ADDD04B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinApiWrapper", "WinApiWrapper\WinApiWrapper.csproj", "{35AD2CA6-75C7-4634-A0D0-25ED0519E6B0}"
 EndProject
