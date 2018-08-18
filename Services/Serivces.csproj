@@ -60,15 +60,6 @@
     <Compile Include="SampleService.Designer.cs">
       <DependentUpon>SampleService.cs</DependentUpon>
     </Compile>
-    <Compile Include="SampleServiceTmp.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SampleServiceTmpInstaller.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SampleServiceTmpInstaller.Designer.cs">
-      <DependentUpon>SampleServiceTmpInstaller.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectInstaller.resx">
