@@ -54,6 +54,7 @@
     <Compile Include="NotifyService.Designer.cs">
       <DependentUpon>NotifyService.cs</DependentUpon>
     </Compile>
+    <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>

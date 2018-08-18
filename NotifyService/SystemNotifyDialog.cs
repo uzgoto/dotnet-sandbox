@@ -12,54 +12,31 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
     public static class SystemNotifyDialog
     {
-        private static readonly MessageBoxButtons Buttons = MessageBoxButtons.OK;
-        private static readonly MessageBoxDefaultButton DefaultButton = MessageBoxDefaultButton.Button1;
-        private static readonly MessageBoxOptions Options =
-            MessageBoxOptions.ServiceNotification | MessageBoxOptions.DefaultDesktopOnly;
-
-        public static Task<DialogResult> ShowInformationAsync(string text, string caption)
+        public static void Show(string text)
         {
-            return
-                Task.Factory.StartNew(() =>
-                    MessageBox.Show(text, caption, Buttons, MessageBoxIcon.Information, DefaultButton, Options)
-                );
-        }
-        
-        public static Task<DialogResult> ShowWarningAsync(string text, string caption)
-        {
-            return
-                Task.Factory.StartNew(() =>
-                    MessageBox.Show(text, caption, Buttons, MessageBoxIcon.Warning, DefaultButton, Options)
-                );
-        }
-
-        public static async void Show(string text)
-        {
-            await RunMsgExe(text);
+            RunMsgExe(text);
         }
 
         public static void Close()
         {
-            Array.ForEach(Dialog.Enumerate().ToArray(), d => d.Close());
+            var msgDialogs = Process.GetProcessesByName("CSRSS").SelectMany(p => Dialog.EnumerateChildsOf(p));
+            var dialog = msgDialogs?.FirstOrDefault();
+            dialog?.Close();
         }
 
-        private static Task<Process> RunMsgExe(string text)
+        private static void RunMsgExe(string text)
         {
-            return
-                Task.Factory.StartNew(() =>
-                {
-                    var sysRoot = Environment.GetEnvironmentVariable("SystemRoot");
-                    var msgPath = Path.Combine(sysRoot, @"Sysnative\msg.exe");
-                    var info = new ProcessStartInfo()
-                    {
-                        FileName = msgPath,
-                        Arguments = @"* /time:0 " + text,
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        Verb = "RunAs",
-                    };
-                    return Process.Start(info);
-                });
+            var sysRoot = Environment.GetEnvironmentVariable("SystemRoot");
+            var msgPath = Path.Combine(sysRoot, @"Sysnative\msg.exe");
+            var info = new ProcessStartInfo()
+            {
+                FileName = msgPath,
+                Arguments = @"* /time:0 " + text,
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                Verb = "RunAs",
+            };
+            Process.Start(info);
         }
     }
 }

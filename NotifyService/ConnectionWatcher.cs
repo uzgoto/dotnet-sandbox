@@ -11,13 +11,12 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
     class ConnectionWatcher
     {
-        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(0, 1);
-
-        private static readonly string LogFormat = "[{0,-10}][{1,-5}][{2,-5}] {3}";
+        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
 
         private readonly Log Log;
         private readonly Stopwatch StopWatch;
         private readonly MockConnection Connection;
+        private readonly CancellationTokenSource CancellationTokenSource;
 
         private bool continuous = true;
 
@@ -26,19 +25,20 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             this.Log = log;
             this.StopWatch = new Stopwatch();
             this.Connection = new MockConnection(this.Log);
+            this.CancellationTokenSource = new CancellationTokenSource();
         }
 
         public void WatchContinuous()
         {
             this.StopWatch.Start();
 
-            this.Connection.StartContinuousStatusSwitching(10);
+            this.Connection.StartContinuousStatusSwitching(10, this.CancellationTokenSource.Token);
 
             var previousConnected = false;
             while (true)
             {
                 Semaphore.Wait();
-                if(!this.continuous)
+                if (!this.continuous)
                 {
                     break;
                 }
@@ -66,20 +66,21 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
         public void StopToWatch()
         {
             Semaphore.Wait();
+            this.CancellationTokenSource.Cancel();
             this.continuous = false;
             Semaphore.Release();
         }
 
         private void CloseNotify()
         {
-            this.Log.WriteLine(LogFormat, "MainProc", "begin", "close", string.Empty);
+            this.Log.WriteLine($"begin close");
             SystemNotifyDialog.Close();
-            this.Log.WriteLine(LogFormat, "MainProc", "end", "close", string.Empty);
+            this.Log.WriteLine($"end   close");
         }
 
         private void Notify(Level level)
         {
-            this.Log.WriteLine(LogFormat, "MainProc", "begin", "open", level);
+            this.Log.WriteLine($"begin {level}");
             switch (level)
             {
                 case Level.Information:
@@ -99,7 +100,7 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                 default:
                     break;
             }
-            this.Log.WriteLine(LogFormat, "MainProc", "end", "open", level);
+            this.Log.WriteLine($"end   {level}");
         }
 
         private enum Level

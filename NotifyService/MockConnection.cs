@@ -9,12 +9,11 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
     class MockConnection
     {
-        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(0, 1);
-        private static readonly string LogFormat = "[{0,-10}][{1,-5}][{2,-5}] {3}";
+        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
 
         private readonly Log Log;
 
-        private bool _Connectable;
+        private bool _Connectable = true;
         public bool Connectable
         {
             get
@@ -37,22 +36,22 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             this.Log = log;
         }
 
-        public Task StartContinuousStatusSwitching(int delaySeconds)
+        public Task StartContinuousStatusSwitching(int delaySeconds, CancellationToken token)
         {
             return
                 Task.Factory.StartNew(() =>
                 {
                     while (true)
                     {
-                        this.Log.WriteLine(LogFormat, "SwitchProc", "begin", "delay", delaySeconds);
+                        this.Log.WriteLine($"begin delay {delaySeconds,2} seconds.");
                         Task.Delay(TimeSpan.FromSeconds(delaySeconds)).Wait();
-                        this.Log.WriteLine(LogFormat, "SwitchProc", "end", "delay", delaySeconds);
+                        this.Log.WriteLine($"end   delay {delaySeconds,2} seconds.");
 
-                        this.Log.WriteLine(LogFormat, "SwitchProc", "begin", "switch", this.Connectable);
+                        this.Log.WriteLine($"begin switch from {(this.Connectable ? "connect" : "disconnect")}");
                         this.Connectable = !this.Connectable;
-                        this.Log.WriteLine(LogFormat, "SwitchProc", "end", "switch", this.Connectable);
+                        this.Log.WriteLine($"end   switch to   {(this.Connectable ? "connect" : "disconnect")}");
                     }
-                });
+                }, token);
         }
     }
 }

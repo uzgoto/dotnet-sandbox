@@ -17,17 +17,18 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
         private const int SERVICE_ACCEPT_PRESHUTDOWN = 0x0100;
         private const int SERVICE_CONTROL_PRESHUTDOWN = 0x000f;
 
-        private Log Log;
-        private ConnectionWatcher Watcher;
+        private readonly Log Log;
+        private readonly ConnectionWatcher Watcher;
+
         private bool stopped = false;
 
-        public NotifyService()
+        public NotifyService(Log log)
         {
             this.InitializeComponent();
 
             this.AcceptPreshutdown();
 
-            this.Log = new Log(Log.Name.Service);
+            this.Log = log;
             this.Watcher = new ConnectionWatcher(this.Log);
         }
 
@@ -42,7 +43,6 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
 
         internal void OnStartByConsole(string[] args)
         {
-            this.Log = new Log(Log.Name.Console);
             this.OnStart(args);
         }
 
@@ -54,7 +54,7 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
         protected override void OnStart(string[] args)
         {
             this.Log.WriteLine("OnStart.");
-            this.Watcher.WatchContinuous();
+            Task.Factory.StartNew(() => this.Watcher.WatchContinuous());
         }
 
         protected override void OnStop()

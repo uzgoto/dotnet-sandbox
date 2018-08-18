@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,13 +12,15 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
     class Log
     {
-        private static readonly SemaphoreSlim LockLogFile = new SemaphoreSlim(0, 1);
+        private static readonly SemaphoreSlim LockLogFile = new SemaphoreSlim(1, 1);
         private static readonly string LogDirectory =
             Path.Combine(
                 Assembly.GetExecutingAssembly().Location,
                 @"..\..\Logs");
+        private static readonly string LogFormat = "[{0,-10}][{1,-5}][{2,-6}] {3}";
 
-        private readonly string LogPath;
+
+        private readonly string LogPath = Path.Combine(LogDirectory, Name.Service.ToString() + ".log");
 
         internal enum Name
         {
@@ -41,15 +44,15 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             if (File.Exists(path))
             {
                 File.Move(path,
-                    path.Replace(".log", $"{DateTime.Now.ToString(".yyyyMMddHHmmssffffff.log")}"));
+                    path.Replace(".log", $"{DateTime.Now.ToString(".yyyyMMddHHmmssffffff")}.log"));
             }
         }
 
-        public void WriteLine(string format, params object[] args)
+        public void WriteLine(string text, [CallerMemberName]string methodName = null)
         {
             LockLogFile.Wait();
-            File.AppendAllText(this.LogPath,
-                $"[{DateTime.Now.ToLongDateString()}] {string.Format(format, args)}",
+            File.AppendAllLines(this.LogPath,
+                new[] { $"[{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}] [{methodName}] {text}" },
                 Encoding.Default);
             LockLogFile.Release();
         }
