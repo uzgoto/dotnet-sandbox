@@ -10,7 +10,7 @@ using Uzgoto.Dotnet.Sandbox.Winapi;
 
 namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
-    public static class SystemNotifyDialog
+    public static class ServiceNotifyDialog
     {
         public static void Show(string text)
         {

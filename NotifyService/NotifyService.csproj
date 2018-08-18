@@ -61,7 +61,7 @@
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
-    <Compile Include="SystemNotifyDialog.cs" />
+    <Compile Include="ServiceNotifyDialog.cs" />
     <Compile Include="ConnectionWatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -74,7 +74,7 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
         private void CloseNotify()
         {
             this.Log.WriteLine($"begin close");
-            SystemNotifyDialog.Close();
+            ServiceNotifyDialog.Close();
             this.Log.WriteLine($"end   close");
         }
 
@@ -87,14 +87,14 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                     //SystemNotifyDialog.ShowInformationAsync(
                     //    $"Connection reopened at {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}",
                     //    $"{Process.GetCurrentProcess().ProcessName}");
-                    SystemNotifyDialog.Show(
+                    ServiceNotifyDialog.Show(
                         $"Connection reopened at {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}");
                     break;
                 case Level.Warning:
                     //SystemNotifyDialog.ShowWarningAsync(
                     //    $"Connection broken at {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}",
                     //    $"{Process.GetCurrentProcess().ProcessName}");
-                    SystemNotifyDialog.Show(
+                    ServiceNotifyDialog.Show(
                         $"Connection broken at {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}");
                     break;
                 default:
