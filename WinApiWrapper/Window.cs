@@ -44,9 +44,9 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
             }
         }
 
-        public int Close()
+        public void Close()
         {
-            return this.Handle.Close();
+            this.Handle.Close();
         }
 
         public override string ToString()
