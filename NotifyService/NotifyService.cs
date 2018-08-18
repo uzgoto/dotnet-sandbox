@@ -17,35 +17,32 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
         private const int SERVICE_ACCEPT_PRESHUTDOWN = 0x0100;
         private const int SERVICE_CONTROL_PRESHUTDOWN = 0x000f;
 
-        private static readonly object LockLogFile = new object();
-        private static readonly string LogDirectory =
-            Path.Combine(
-                Assembly.GetExecutingAssembly().Location,
-                @"..\..\Logs");
-        private static readonly string ServiceLogFile = "Service.log";
-        private static readonly string ConsoleLogFile = "Console.log";
-
-        private string LogPath = Path.Combine(LogDirectory, ServiceLogFile);
+        private Log Log;
+        private ConnectionWatcher Watcher;
+        private bool stopped = false;
 
         public NotifyService()
         {
             this.InitializeComponent();
 
+            this.AcceptPreshutdown();
+
+            this.Log = new Log(Log.Name.Service);
+            this.Watcher = new ConnectionWatcher(this.Log);
+        }
+
+        private void AcceptPreshutdown()
+        {
             var field =
                 typeof(ServiceBase).GetField("acceptedCommands",
                 BindingFlags.NonPublic | BindingFlags.Instance);
             var value = (int)field.GetValue(this);
             field.SetValue(this, value | SERVICE_ACCEPT_PRESHUTDOWN);
-
-            if (!Directory.Exists(LogDirectory))
-            {
-                Directory.CreateDirectory(LogDirectory);
-            }
         }
 
         internal void OnStartByConsole(string[] args)
         {
-            this.LogPath = this.LogPath.Replace(ServiceLogFile, ConsoleLogFile);
+            this.Log = new Log(Log.Name.Console);
             this.OnStart(args);
         }
 
@@ -56,36 +53,40 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
 
         protected override void OnStart(string[] args)
         {
-            this.WriteLogFile("Start service.");
+            this.Log.WriteLine("OnStart.");
+            this.Watcher.WatchContinuous();
         }
 
         protected override void OnStop()
         {
-            this.WriteLogFile("Stop service.");
+            if(this.stopped)
+            {
+                return;
+            }
+            this.Log.WriteLine("OnStop.");
+
+            this.Watcher.StopToWatch();            
+
+            this.stopped = true;
         }
 
         protected override void OnShutdown()
         {
-            this.WriteLogFile("Shutdown.");
+            this.Log.WriteLine("OnShutdown.");
+            this.OnStop();
         }
 
         protected override void OnCustomCommand(int command)
         {
-            if (command == SERVICE_CONTROL_PRESHUTDOWN)
+            switch (command)
             {
-                this.WriteLogFile("Preshutdown.");
-                this.OnStop();
-                return;
-            }
-
-            base.OnCustomCommand(command);
-        }
-
-        private void WriteLogFile(string contents)
-        {
-            lock (LockLogFile)
-            {
-                File.AppendAllText(this.LogPath, contents, Encoding.Default);
+                case SERVICE_CONTROL_PRESHUTDOWN:
+                    this.Log.WriteLine("OnPreshutdown.");
+                    this.OnStop();
+                    break;
+                default:
+                    base.OnCustomCommand(command);
+                    break;
             }
         }
     }

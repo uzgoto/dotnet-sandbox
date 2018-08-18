@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Log.cs" />
+    <Compile Include="MockConnection.cs" />
     <Compile Include="NotifyService.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -59,7 +61,7 @@
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
     <Compile Include="SystemNotifyDialog.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="ConnectionWatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
