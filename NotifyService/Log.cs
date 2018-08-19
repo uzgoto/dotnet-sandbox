@@ -17,8 +17,6 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             Path.Combine(
                 Assembly.GetExecutingAssembly().Location,
                 @"..\..\Logs");
-        private static readonly string LogFormat = "[{0,-10}][{1,-5}][{2,-6}] {3}";
-
 
         private readonly string LogPath = Path.Combine(LogDirectory, Name.Service.ToString() + ".log");
 
