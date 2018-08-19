@@ -59,8 +59,8 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
         public override string ToString()
         {
             return
-                string.Format("{0}: {{{1}:{2}, {3}:{4}, {5}:{6}}}",
-                    this.ProcessName,
+                string.Format("{{{0}:{1}, {2}:{3}, {4}:{5}, {6}:{7}}}",
+                    nameof(this.ProcessName), this.ProcessName,
                     nameof(this.Handle), this.Handle,
                     nameof(this.Title), this.Title,
                     nameof(this.ClassName), this.ClassName);
