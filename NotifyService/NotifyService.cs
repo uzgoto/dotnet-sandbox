@@ -59,15 +59,15 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
 
         protected override void OnStop()
         {
-            this.Log.WriteLine("OnStop.");
-            if (this.stopped)
+            if(this.stopped)
             {
-                this.Log.WriteLine($"OnStop is skipped.");
                 return;
             }
-            this.Watcher.StopToWatch();
+            this.Log.WriteLine("OnStop.");
+
+            this.Watcher.StopToWatch();            
+
             this.stopped = true;
-            this.Log.WriteLine("Stopped.");
         }
 
         protected override void OnShutdown()
