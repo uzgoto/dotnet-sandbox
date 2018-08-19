@@ -41,6 +41,7 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             return
                 Task.Factory.StartNew(() =>
                 {
+                    this.Log.WriteLine($"Start to Switch.");
                     while (true)
                     {
                         if(token.IsCancellationRequested)
@@ -48,13 +49,8 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                             break;
                         }
 
-                        this.Log.WriteLine($"begin delay {delaySeconds,2} seconds.");
-                        Task.Delay(TimeSpan.FromSeconds(delaySeconds)).Wait();
-                        this.Log.WriteLine($"end   delay {delaySeconds,2} seconds.");
-
-                        this.Log.WriteLine($"begin switch from {(this.Connectable ? "connect" : "disconnect")}");
                         this.Connectable = !this.Connectable;
-                        this.Log.WriteLine($"end   switch to   {(this.Connectable ? "connect" : "disconnect")}");
+                        Task.Delay(TimeSpan.FromSeconds(delaySeconds)).Wait();
                     }
                     this.Log.WriteLine($"End to Switch.");
                 }, token);
