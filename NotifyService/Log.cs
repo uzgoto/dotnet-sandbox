@@ -18,7 +18,7 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                 Assembly.GetExecutingAssembly().Location,
                 @"..\..\Logs");
 
-        private readonly string LogPath = Path.Combine(LogDirectory, Name.Service.ToString() + ".log");
+        private readonly string LogPath;
 
         internal enum Name
         {
