@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Uzgoto.Dotnet.Sandbox.Winapi
 {
-    internal static class Extensions
+    internal static class ApiWrapper
     {
         private static class WinApi
         {
@@ -63,7 +63,7 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
         {
             WinApi.SendMessage(hWnd, (int)WinApi.WM.SYSCOMMAND, (int)WinApi.SC.CLOSE, IntPtr.Zero);
             var code = Marshal.GetLastWin32Error();
-            if(code != 0)
+            if (code != 0)
             {
                 throw new Win32Exception(code);
             }
