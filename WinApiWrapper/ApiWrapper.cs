@@ -19,6 +19,8 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
             [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
             [return: MarshalAs(UnmanagedType.Bool)]
             internal static extern bool SendMessage(IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
+            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+            internal static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
 
             internal enum WM
             {
@@ -28,6 +30,24 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
             internal enum SC
             {
                 CLOSE = 0xF060
+            }
+            [Flags]
+            internal enum MB : uint
+            {
+                OK = 0x0000_0000,
+
+                ICONERROR = 0x0000_0010,
+                ICONQUESTION = 0x0000_0020,
+                ICONWARNING = 0x0000_0030,
+                ICONINFORMATION = 0x0000_0040,
+
+                SYSTEMMODAL = 0x0000_1000,
+                TASKMODAL = 0x0000_2000,
+
+                SETFOREGROUND = 0x0001_0000,
+                DEFAULT_DESKTOP_ONLY = 0x0002_0000,
+                TOPMOST = 0x0004_0000,
+                SERVICE_NOTIFICATION = 0x0020_0000,
             }
         }
 
@@ -72,6 +92,19 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
         internal static void SilentlyClose(this IntPtr hWnd)
         {
             WinApi.SendMessage(hWnd, (int)WinApi.WM.SYSCOMMAND, (int)WinApi.SC.CLOSE, IntPtr.Zero);
+        }
+
+        internal static void ShowInformationDialog(string text, string caption)
+        {
+            var type =
+                WinApi.MB.OK | WinApi.MB.ICONINFORMATION | 
+                WinApi.MB.SETFOREGROUND | WinApi.MB.TOPMOST | WinApi.MB.SERVICE_NOTIFICATION;
+            WinApi.MessageBox(IntPtr.Zero, text, caption, (uint)type);
+            var code = Marshal.GetLastWin32Error();
+            if(code != 0)
+            {
+                throw new Win32Exception(code);
+            }
         }
     }
 }

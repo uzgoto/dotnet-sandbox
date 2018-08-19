@@ -46,5 +46,10 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
                 }
             }
         }
+
+        public static void ShowInformation(string text, string caption)
+        {
+            ApiWrapper.ShowInformationDialog(text, caption);
+        }
     }
 }
