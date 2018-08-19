@@ -43,6 +43,11 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                 {
                     while (true)
                     {
+                        if(token.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
                         this.Log.WriteLine($"begin delay {delaySeconds,2} seconds.");
                         Task.Delay(TimeSpan.FromSeconds(delaySeconds)).Wait();
                         this.Log.WriteLine($"end   delay {delaySeconds,2} seconds.");
@@ -51,6 +56,7 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                         this.Connectable = !this.Connectable;
                         this.Log.WriteLine($"end   switch to   {(this.Connectable ? "connect" : "disconnect")}");
                     }
+                    this.Log.WriteLine($"End to Switch.");
                 }, token);
         }
     }
