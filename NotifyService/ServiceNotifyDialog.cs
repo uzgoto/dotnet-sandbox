@@ -17,11 +17,20 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             RunMsgExe(text);
         }
 
+        public static IEnumerable<string> EnumDialogs()
+        {
+            var msgDialogs = Window.Enumerate();
+            foreach (var msgDialog in msgDialogs)
+            {
+                yield return msgDialog.ToString();
+            }
+            yield return Dialog.FindTopLevelDialog().ToString();
+        }
+
         public static void Close()
         {
             var msgDialogs = Process.GetProcessesByName("CSRSS").SelectMany(p => Dialog.EnumerateChildsOf(p));
-            var dialog = msgDialogs?.FirstOrDefault();
-            dialog?.Close();
+            msgDialogs.FirstOrDefault().Close();
         }
 
         private static void RunMsgExe(string text)

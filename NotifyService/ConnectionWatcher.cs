@@ -61,6 +61,7 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
 
                 Task.Delay(TimeSpan.FromSeconds(1)).Wait();
             }
+            this.Log.WriteLine($"End to watch.");
         }
 
         public void StopToWatch()
@@ -74,7 +75,24 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
         private void CloseNotify()
         {
             this.Log.WriteLine($"begin close");
-            ServiceNotifyDialog.Close();
+            foreach(var dialogInfo in ServiceNotifyDialog.EnumDialogs())
+            {
+                this.Log.WriteLine(dialogInfo);
+            }
+            try
+            {
+                ServiceNotifyDialog.Close();
+            }
+            catch (NullReferenceException nre)
+            {
+                this.Log.WriteLine($"{nre.Message} No dialog to close.");
+            }
+            catch (Exception ex)
+            {
+                Array.ForEach(
+                    ex.ToString().Split('\n'),
+                    line => this.Log.WriteLine(line));
+            }
             this.Log.WriteLine($"end   close");
         }
 

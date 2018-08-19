@@ -61,8 +61,8 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             var path = Assembly.GetExecutingAssembly().Location;
             ManagedInstallerClass.InstallHelper(
                 string.IsNullOrEmpty(option)
-                ? new[] { path }
-                : new[] { option, path });
+                ? new[] { "/LogFile=", path }
+                : new[] { option, "/LogFile=", path });
         }
 
         private static bool IsInstalled(NotifyService service)
