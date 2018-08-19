@@ -62,6 +62,16 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
         internal static void Close(this IntPtr hWnd)
         {
             WinApi.SendMessage(hWnd, (int)WinApi.WM.SYSCOMMAND, (int)WinApi.SC.CLOSE, IntPtr.Zero);
+            var code = Marshal.GetLastWin32Error();
+            if(code != 0)
+            {
+                throw new Win32Exception(code);
+            }
+        }
+
+        internal static void SilentlyClose(this IntPtr hWnd)
+        {
+            WinApi.SendMessage(hWnd, (int)WinApi.WM.SYSCOMMAND, (int)WinApi.SC.CLOSE, IntPtr.Zero);
         }
     }
 }

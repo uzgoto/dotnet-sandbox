@@ -44,9 +44,16 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
             }
         }
 
-        public void Close()
+        public void Close(bool isSilentlyContinue = false)
         {
-            this.Handle.Close();
+            if (isSilentlyContinue)
+            {
+                this.Handle.SilentlyClose();
+            }
+            else
+            {
+                this.Handle.Close();
+            }
         }
 
         public override string ToString()
