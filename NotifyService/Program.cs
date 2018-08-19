@@ -13,47 +13,45 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
     {
         static void Main(string[] args)
         {
-            var service = new NotifyService(new Log(Log.Name.Service));
-
-            if (!Environment.UserInteractive)
+            if (Environment.UserInteractive)
             {
-                // Service mode.
-                ServiceBase.Run(service);
-                return;
-            }
+                var service = new NotifyService(new Log(Log.Name.Console));
 
-            if (args.Length == 1)
-            {
-                // Install mode.
-                switch (args[0].ToLower())
+                if (args.Length == 1)
                 {
-                    case "/i":
-                        if (!IsInstalled(service))
-                        {
-                            CallInstaller();
+                    // Install mode.
+                    switch (args[0].ToLower())
+                    {
+                        case "/i":
+                            if (!IsInstalled(service))
+                            {
+                                CallInstaller();
+                                return;
+                            }
+                            Console.WriteLine($"Service {service.ServiceName} is already installed.");
                             return;
-                        }
-                        Console.WriteLine($"Service {service.ServiceName} is already installed.");
-                        return;
-                    case "/u":
-                        if (IsInstalled(service))
-                        {
-                            CallInstaller(option: args[0]);
+                        case "/u":
+                            if (IsInstalled(service))
+                            {
+                                CallInstaller(option: args[0]);
+                                return;
+                            }
+                            Console.WriteLine($"Service {service.ServiceName} is not installed.");
                             return;
-                        }
-                        Console.WriteLine($"Service {service.ServiceName} is not installed.");
-                        return;
-                    default:
-                        break;
+                        case "/d":
+                            // Interactive mode.
+                            service.OnStartByConsole(args);
+                            Console.WriteLine("Press any keys to stop service.");
+                            Console.ReadKey();
+                            service.OnStopByConsole();
+                            return;
+                        default:
+                            break;
+                    }
                 }
             }
-
-            // Interactive mode.
-            service = new NotifyService(new Log(Log.Name.Console));
-            service.OnStartByConsole(args);
-            Console.WriteLine("Press any keys to stop service.");
-            Console.ReadKey();
-            service.OnStopByConsole();
+            // Service mode.
+            ServiceBase.Run(new NotifyService(new Log(Log.Name.Service)));
         }
 
         private static void CallInstaller(string option = "")
