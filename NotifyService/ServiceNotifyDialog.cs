@@ -19,12 +19,10 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
 
         public static IEnumerable<string> EnumDialogs()
         {
-            var msgDialogs = Window.Enumerate();
-            foreach (var msgDialog in msgDialogs)
+            foreach (var msgDialog in Window.Enumerate())
             {
                 yield return msgDialog.ToString();
             }
-            yield return Dialog.FindTopLevelDialog().ToString();
         }
 
         public static void Close()
