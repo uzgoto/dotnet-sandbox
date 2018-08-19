@@ -13,9 +13,9 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
 
         public static IEnumerable<Window> Enumerate()
         {
-            foreach(var proc in Process.GetProcesses())
+            foreach (var proc in Process.GetProcesses())
             {
-                foreach(var window in EnumerateChildsOf(proc))
+                foreach (var window in EnumerateChildsOf(proc))
                 {
                     yield return window;
                 }
@@ -24,7 +24,7 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
 
         public static IEnumerable<Window> EnumerateChilds()
         {
-            foreach(var window in EnumerateChildsOf(Process.GetCurrentProcess()))
+            foreach (var window in EnumerateChildsOf(Process.GetCurrentProcess()))
             {
                 yield return window;
             }
