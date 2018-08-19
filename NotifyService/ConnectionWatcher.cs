@@ -75,7 +75,7 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
         private void CloseNotify()
         {
             this.Log.WriteLine($"begin close");
-            foreach(var dialogInfo in ServiceNotifyDialog.EnumDialogs())
+            foreach (var dialogInfo in ServiceNotifyDialog.EnumDialogs())
             {
                 this.Log.WriteLine(dialogInfo);
             }
