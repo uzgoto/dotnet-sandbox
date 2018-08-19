@@ -6,7 +6,7 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
 {
     public class Window
     {
-        public string ProcessName { get; protected set; }
+        public Process Process { get; protected set; }
         public IntPtr Handle { get; protected set; }
         public string Title { get; protected set; }
         public string ClassName { get; protected set; }
@@ -36,7 +36,7 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
             {
                 yield return new Window()
                 {
-                    ProcessName = parent.ProcessName,
+                    Process = parent,
                     Handle = handle,
                     Title = handle.GetWindowText(),
                     ClassName = handle.GetClassName(),
@@ -60,7 +60,7 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
         {
             return
                 string.Format("{{{0}:{1}, {2}:{3}, {4}:{5}, {6}:{7}}}",
-                    nameof(this.ProcessName), this.ProcessName,
+                    nameof(this.Process), this.Process.ProcessName,
                     nameof(this.Handle), this.Handle,
                     nameof(this.Title), this.Title,
                     nameof(this.ClassName), this.ClassName);

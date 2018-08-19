@@ -38,7 +38,7 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
                 {
                     yield return new Dialog()
                     {
-                        ProcessName = parent.ProcessName,
+                        Process = parent,
                         Handle = handle,
                         Title = handle.GetWindowText(),
                         ClassName = DialogClassName,
