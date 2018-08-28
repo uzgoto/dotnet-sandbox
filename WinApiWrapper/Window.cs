@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Uzgoto.Dotnet.Sandbox.Winapi
 {
@@ -10,6 +11,45 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
         public IntPtr Handle { get; protected set; }
         public string Title { get; protected set; }
         public string ClassName { get; protected set; }
+
+        public static IEnumerable<Window> Enumerate(Desktop desktop)
+        {
+            foreach (var handle in ApiWrapper.EnumDesktopWindows(desktop.Id))
+            {
+                yield return new Window()
+                {
+                    Process = handle.GetProcess(),
+                    Handle = handle,
+                    Title = handle.GetWindowText(),
+                    ClassName = handle.GetClassName(),
+                };
+            }
+        }
+
+        public static IEnumerable<string> EnumerateAll()
+        {
+            foreach (var winSta in WindowStation.Enumerate())
+            {
+                foreach (var desktop in Desktop.Enumerate(winSta))
+                {
+                    foreach (var window in Window.Enumerate(desktop))
+                    {
+                        yield return $"{winSta}, {desktop}, {window}";
+                    }
+                }
+            }
+        }
+
+        public static IEnumerable<(int, string, int, string)> EnumerateWTSProcesses()
+        {
+            var sessions = ApiWrapper.WTSEnumerateSessions();
+            var processes = ApiWrapper.WTSEnumerateProcesses();
+            var zipped = Enumerable.Zip(sessions, processes, (s, p) => (s.Item1, s.Item2, p.Item2, p.Item3));
+            foreach (var (sid, winsta, pid, procname) in zipped)
+            {
+                yield return (sid, winsta, pid, procname);
+            }
+        }
 
         public static IEnumerable<Window> Enumerate()
         {
@@ -59,11 +99,8 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
         public override string ToString()
         {
             return
-                string.Format("{{{0}:{1}, {2}:{3}, {4}:{5}, {6}:{7}}}",
-                    nameof(this.Process), this.Process.ProcessName,
-                    nameof(this.Handle), this.Handle,
-                    nameof(this.Title), this.Title,
-                    nameof(this.ClassName), this.ClassName);
+                $"Process: {this.Process.ProcessName} ({this.Process.Id}), " +
+                $"Window: {this.Title} ({this.Handle}) [{this.ClassName}]";
         }
     }
 }

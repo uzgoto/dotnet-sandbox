@@ -18,6 +18,23 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
                 }
             }
         }
+        
+        public static new IEnumerable<Window> EnumerateAll()
+        {
+            foreach (var winSta in WindowStation.Enumerate())
+            {
+                foreach (var desktop in Desktop.Enumerate(winSta))
+                {
+                    foreach (var window in Window.Enumerate(desktop))
+                    {
+                        if (window.ClassName == DialogClassName)
+                        {
+                            yield return window;
+                        }
+                    }
+                }
+            }
+        }
 
         public static new IEnumerable<Window> EnumerateChilds()
         {
@@ -45,11 +62,6 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
                     };
                 }
             }
-        }
-
-        public static void ShowInformation(string text, string caption)
-        {
-            ApiWrapper.ShowInformationDialog(text, caption);
         }
     }
 }
