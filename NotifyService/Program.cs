@@ -23,7 +23,7 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                     switch (args[0].ToLower())
                     {
                         case "/i":
-                            if (!IsInstalled(service))
+                            if (!IsInstalled(service.ServiceName))
                             {
                                 CallInstaller();
                                 return;
@@ -31,19 +31,19 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                             Console.WriteLine($"Service {service.ServiceName} is already installed.");
                             return;
                         case "/u":
-                            if (IsInstalled(service))
+                            if (IsInstalled(service.ServiceName))
                             {
                                 CallInstaller(option: args[0]);
                                 return;
                             }
                             Console.WriteLine($"Service {service.ServiceName} is not installed.");
                             return;
-                        case "/d":
-                            // Interactive mode.
-                            service.OnStartByConsole(args);
-                            Console.WriteLine("Press any keys to stop service.");
-                            Console.ReadKey();
-                            service.OnStopByConsole();
+                        case "/start":
+                            if(GetService(service.ServiceName).Status != ServiceControllerStatus.Running)
+                            {
+                                GetService(service.ServiceName).Start();
+                                return;
+                            }
                             return;
                         default:
                             break;
@@ -61,13 +61,19 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                 string.IsNullOrEmpty(option)
                 ? new[] { "/LogFile=", path }
                 : new[] { option, "/LogFile=", path });
+
         }
 
-        private static bool IsInstalled(NotifyService service)
+        private static ServiceController GetService(string name)
+        {
+            return ServiceController.GetServices().FirstOrDefault(s => s.ServiceName == name);
+        }
+
+        private static bool IsInstalled(string name)
         {
             return
                 ServiceController.GetServices()
-                    .Any(s => s.ServiceName == service.ServiceName);
+                    .Any(s => s.ServiceName == name);
         }
     }
 }
