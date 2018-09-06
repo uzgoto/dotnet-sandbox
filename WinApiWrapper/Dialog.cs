@@ -49,15 +49,15 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
 
         public static new IEnumerable<Window> EnumerateChildsOf(Process parent)
         {
-            foreach (var handle in parent.MainWindowHandle.EnumWindowHandles())
+            foreach (var handle in SafeUserApi.EnumWindowHandles(parent.MainWindowHandle))
             {
-                if (handle.GetClassName() == DialogClassName)
+                if (SafeUserApi.GetClassName(handle) == DialogClassName)
                 {
                     yield return new Dialog()
                     {
                         Process = parent,
                         Handle = handle,
-                        Title = handle.GetWindowText(),
+                        Title = SafeUserApi.GetWindowText(handle),
                         ClassName = DialogClassName,
                     };
                 }

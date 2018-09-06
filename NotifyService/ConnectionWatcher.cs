@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Reflection;
 using System.Threading;
+using Uzgoto.Dotnet.Sandbox.Winapi;
 
 namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
@@ -17,6 +18,8 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
         private readonly Stopwatch StopWatch;
         private readonly MockConnection Connection;
         private readonly CancellationTokenSource CancellationTokenSource;
+        private readonly ServiceNotifyDialog Dialog;
+        internal volatile int SessionId;
 
         private bool continuous = true;
 
@@ -26,6 +29,8 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             this.StopWatch = new Stopwatch();
             this.Connection = new MockConnection(this.Log);
             this.CancellationTokenSource = new CancellationTokenSource();
+            this.Dialog = new ServiceNotifyDialog();
+            this.SessionId = Session.GetCurrentSessionId();
         }
 
         public void WatchContinuous()
@@ -35,33 +40,32 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             this.Connection.StartContinuousStatusSwitching(10, this.CancellationTokenSource.Token);
 
             var previousConnected = false;
-            while (true)
+            while (this.continuous)
             {
                 Semaphore.Wait();
-                if (!this.continuous)
-                {
-                    break;
-                }
+                this.SessionId = Session.GetCurrentSessionId();
 
                 var currentConnected = this.Connection.Connectable;
 
                 // Close if any messageboxes showed, and show messagebox asynchronously, by service account.
                 if (!previousConnected && currentConnected)
                 {
-                    this.CloseNotify();
-                    this.Notify(Level.Information);
+                    this.Log.WriteLine($"Current session: {this.SessionId}");
+                    this.CloseNotify(this.SessionId);
+                    this.Notify(this.SessionId, Level.Information);
                 }
                 else if (previousConnected && !currentConnected)
                 {
-                    this.CloseNotify();
-                    this.Notify(Level.Warning);
+                    this.Log.WriteLine($"Current session: {this.SessionId}");
+                    this.CloseNotify(this.SessionId);
+                    this.Notify(this.SessionId, Level.Warning);
                 }
                 previousConnected = currentConnected;
                 Semaphore.Release();
 
                 Task.Delay(TimeSpan.FromSeconds(1)).Wait();
             }
-            this.Log.WriteLine($"End to watch.");
+            //this.Log.WriteLine($"End to watch.");
         }
 
         public void StopToWatch()
@@ -72,53 +76,60 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             Semaphore.Release();
         }
 
-        private void CloseNotify()
+        private void CloseNotify(int sessionId)
         {
-            this.Log.WriteLine($"begin close");
-            foreach (var dialogInfo in ServiceNotifyDialog.EnumDialogs())
+           foreach(var window in Window.EnumerateAll())
             {
-                this.Log.WriteLine(dialogInfo);
+                this.Log.WriteLine(window.ToString());
             }
+        }
+        //private void CloseNotify(int sessionId)
+        //{
+        //    var process = Process.GetProcesses().FirstOrDefault(p => p.SessionId == sessionId && p.ProcessName == "csrss");
+        //    if(process != null)
+        //    {
+        //        this.Log.WriteLine($"Close window of ({process.Id})");
+        //        try
+        //        {
+        //            SafeUserApi.Close(process.MainWindowHandle);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            this.Log.WriteLine($"Exception {ex.Message}");
+        //        }
+        //    }
+        //}
+
+        private void Notify(int sessionId, Level level)
+        {
             try
             {
-                ServiceNotifyDialog.Close();
-            }
-            catch (NullReferenceException nre)
-            {
-                this.Log.WriteLine($"{nre.Message} No dialog to close.");
+                var textInfo = $"Connection reopened at {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}";
+                var textWarn = $"Connection broken at {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}";
+                var caption = $"{Process.GetCurrentProcess().ProcessName}";
+                var code = 0;
+                switch (level)
+                {
+                    case Level.Information:
+                        this.Log.WriteLine($"Notify information to session ({sessionId})");
+                        code = ServiceNotifyDialog.ShowWTSMessageBox(sessionId, textInfo, caption, ServiceNotifyDialog.IconStyle.Information);
+                        break;
+                    case Level.Warning:
+                        this.Log.WriteLine($"Notify warning to session ({sessionId})");
+                        code = ServiceNotifyDialog.ShowWTSMessageBox(sessionId, textWarn, caption, ServiceNotifyDialog.IconStyle.Warining);
+                        break;
+                    default:
+                        break;
+                }
+                if(code != 0)
+                {
+                    this.Log.WriteLine($"Win32Error {code}");
+                }
             }
             catch (Exception ex)
             {
-                Array.ForEach(
-                    ex.ToString().Split('\n'),
-                    line => this.Log.WriteLine(line));
+                this.Log.WriteLine(ex.ToString());
             }
-            this.Log.WriteLine($"end   close");
-        }
-
-        private void Notify(Level level)
-        {
-            this.Log.WriteLine($"begin {level}");
-            switch (level)
-            {
-                case Level.Information:
-                    //SystemNotifyDialog.ShowInformationAsync(
-                    //    $"Connection reopened at {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}",
-                    //    $"{Process.GetCurrentProcess().ProcessName}");
-                    ServiceNotifyDialog.Show(
-                        $"Connection reopened at {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}");
-                    break;
-                case Level.Warning:
-                    //SystemNotifyDialog.ShowWarningAsync(
-                    //    $"Connection broken at {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}",
-                    //    $"{Process.GetCurrentProcess().ProcessName}");
-                    ServiceNotifyDialog.Show(
-                        $"Connection broken at {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.ffffff")}");
-                    break;
-                default:
-                    break;
-            }
-            this.Log.WriteLine($"end   {level}");
         }
 
         private enum Level

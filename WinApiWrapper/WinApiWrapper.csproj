@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{35AD2CA6-75C7-4634-A0D0-25ED0519E6B0}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>Uzgoto.Dotnet.Sandbox.Winapi</RootNamespace>
     <AssemblyName>WinApiWrapper</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
@@ -47,8 +47,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Desktop.cs" />
+    <Compile Include="SafeUserApi.cs" />
+    <Compile Include="SafeWTSApi.cs" />
+    <Compile Include="Session.cs" />
     <Compile Include="WindowStation.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Dialog.cs" />
     <Compile Include="Window.cs" />

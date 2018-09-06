@@ -12,17 +12,38 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
         public string Title { get; protected set; }
         public string ClassName { get; protected set; }
 
+        private static Window CreateFrom(Process process)
+        {
+            var handle = process.MainWindowHandle;
+            return new Window()
+            {
+                Process = process,
+                Handle = handle,
+                Title = SafeUserApi.GetWindowText(handle),
+                ClassName = SafeUserApi.GetClassName(handle),
+            };
+        }
+        private static Window CreateFrom(IntPtr handle)
+        {
+            return new Window()
+            {
+                Process = SafeUserApi.GetProcess(handle),
+                Handle = handle,
+                Title = SafeUserApi.GetWindowText(handle),
+                ClassName = SafeUserApi.GetClassName(handle),
+            };
+        }
+
+        public static Window GetMainWindowOf(Process process)
+        {
+            return CreateFrom(process);
+        }
+
         public static IEnumerable<Window> Enumerate(Desktop desktop)
         {
             foreach (var handle in ApiWrapper.EnumDesktopWindows(desktop.Id))
             {
-                yield return new Window()
-                {
-                    Process = handle.GetProcess(),
-                    Handle = handle,
-                    Title = handle.GetWindowText(),
-                    ClassName = handle.GetClassName(),
-                };
+                yield return CreateFrom(handle);
             }
         }
 
@@ -37,17 +58,6 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
                         yield return $"{winSta}, {desktop}, {window}";
                     }
                 }
-            }
-        }
-
-        public static IEnumerable<(int, string, int, string)> EnumerateWTSProcesses()
-        {
-            var sessions = ApiWrapper.WTSEnumerateSessions();
-            var processes = ApiWrapper.WTSEnumerateProcesses();
-            var zipped = Enumerable.Zip(sessions, processes, (s, p) => (s.Item1, s.Item2, p.Item2, p.Item3));
-            foreach (var (sid, winsta, pid, procname) in zipped)
-            {
-                yield return (sid, winsta, pid, procname);
             }
         }
 
@@ -72,15 +82,9 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
 
         public static IEnumerable<Window> EnumerateChildsOf(Process parent)
         {
-            foreach (var handle in parent.MainWindowHandle.EnumWindowHandles())
+            foreach (var handle in SafeUserApi.EnumWindowHandles(parent.MainWindowHandle))
             {
-                yield return new Window()
-                {
-                    Process = parent,
-                    Handle = handle,
-                    Title = handle.GetWindowText(),
-                    ClassName = handle.GetClassName(),
-                };
+                yield return CreateFrom(handle);
             }
         }
 
@@ -88,11 +92,11 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
         {
             if (isSilentlyContinue)
             {
-                this.Handle.SilentlyClose();
+                SafeUserApi.SilentlyClose(this.Handle);
             }
             else
             {
-                this.Handle.Close();
+                SafeUserApi.Close(this.Handle);
             }
         }
 

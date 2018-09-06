@@ -10,23 +10,33 @@ using Uzgoto.Dotnet.Sandbox.Winapi;
 
 namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
-    public static class ServiceNotifyDialog
+    public class ServiceNotifyDialog
     {
-        public static void Show(string text)
+        private Process proc;
+
+        public static int ShowWTSMessageBox(int sessionId, string text, string caption, IconStyle style)
         {
-            ShowDialog(text, "からのメッセージ", IconStyle.Information);
-            //RunMsgExe(text);
+            switch (style)
+            {
+                case IconStyle.Information:
+                    return SafeWTSApi.WTSSendMessageInformation(sessionId, text, caption);
+                case IconStyle.Warining:
+                    return SafeWTSApi.WTSSendMessageWarning(sessionId, text, caption);
+                case IconStyle.Error:
+                default:
+                    return 0;
+            }
+        }
+        public enum IconStyle
+        {
+            Information,
+            Warining,
+            Error,
         }
 
         public static IEnumerable<string> EnumDialogs()
         {
-            //foreach (var window in Dialog.Enumerate()
-                            //.OrderBy(w => w.Process.ProcessName)
-                            //                                    )
-            //{
-            //foreach (var window in Process.GetProcessesByName("CSRSS").SelectMany(p => Dialog.EnumerateChildsOf(p)))
-            //{
-            foreach (var window in Dialog.EnumerateChildsOf(Process.GetCurrentProcess()))
+            foreach (var window in Window.EnumerateAll())
             {
                 yield return window.ToString();
             }
@@ -34,10 +44,7 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
 
         public static void Close()
         {
-            var dialogs =
-                Dialog.Enumerate();
-                //Process.GetProcessesByName("CSRSS").SelectMany(p => Dialog.EnumerateChildsOf(p));
-                //Dialog.EnumerateChildsOf(Process.GetCurrentProcess());
+            var dialogs = Dialog.EnumerateAll();
             foreach (var dialog in dialogs)
             {
                 dialog.Close(isSilentlyContinue: true);
@@ -45,35 +52,9 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             //dialogs?.FirstOrDefault()?.Close(isSilentlyContinue: true);
         }
 
-        private static void RunMsgExe(string text)
+        public void Kill()
         {
-            var sysRoot = Environment.GetEnvironmentVariable("SystemRoot");
-            var msgPath = Path.Combine(sysRoot, @"Sysnative\msg.exe");
-            var info = new ProcessStartInfo()
-            {
-                FileName = msgPath,
-                Arguments = @"* /time:0 " + text,
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                Verb = "RunAs",
-            };
-            Process.Start(info);
-        }
-
-        private enum IconStyle
-        {
-            None,
-            Information,
-            Warining,
-            Error,
-            Question,
-        }
-        private static void ShowDialog(string text, string caption, IconStyle style)
-        {
-            Task.Factory.StartNew(() =>
-            {
-                Dialog.ShowInformation(text, caption);  
-            });
+            this.proc?.Kill();
         }
     }
 }

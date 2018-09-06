@@ -10,20 +10,8 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
 {
     public static class ApiWrapper
     {
-        private static class WinApi
+        private static class NativeMethods
         {
-            [DllImport("user32.dll", SetLastError = true)]
-            internal static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
-            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-            internal static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-            internal static extern int GetWindowText(IntPtr hWnd, StringBuilder lpText, int nMaxCount);
-            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-            [return: MarshalAs(UnmanagedType.Bool)]
-            internal static extern bool SendMessage(IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
-            [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-            internal static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
-
             [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
             internal static extern IntPtr OpenWindowStation(string lpszWinSta, bool fInherit, uint dwDesiredAccess);
             [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -47,85 +35,14 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
                 IO = 6,
             }
 
-            #region WTS
-            [DllImport("wtsapi32.dll", SetLastError = true)]
-            internal static extern bool WTSSendMessage(
-                IntPtr hServer,
-                [MarshalAs(UnmanagedType.I4)]int sessionId,
-                string pTitle,
-                [MarshalAs(UnmanagedType.U4)]int titleLength,
-                string pMessage,
-                [MarshalAs(UnmanagedType.U4)]int messageLength,
-                [MarshalAs(UnmanagedType.U4)]uint style,
-                [MarshalAs(UnmanagedType.U4)]int timeout,
-                [MarshalAs(UnmanagedType.U4)]out int pResponse,
-                bool bWait);
-            [DllImport("wtsapi32.dll", SetLastError = true)]
-            internal static extern void WTSEnumerateSessions(IntPtr hServer, int Reserved, int Version, out IntPtr ppSessionInfo, out int pCount);
-            [DllImport("wtsapi32.dll", SetLastError = true)]
-            internal static extern void WTSEnumerateProcesses(IntPtr hServer, int Reserved, int Version, out IntPtr ppProcessInfo, out int pCount);
-            [DllImport("wtsapi32.dll", SetLastError = true)]
-            internal static extern void WTSFreeMemory(IntPtr pMemory);
-            [DllImport("wtsapi32.dll", SetLastError = true)]
-            internal static extern bool WTSTerminateProcess(IntPtr hServer, int ProcessId, int ExitCode);
-
-            [StructLayout(LayoutKind.Sequential)]
-            internal struct WTS_SESSION_INFO
-            {
-                public int SessionId { get; set; }
-                public string WinStationName { get; set; }
-                public WTS_CONNECTSTATE_CLASS State { get; set; }
-            }
-            [Flags]
-            internal enum WTS_CONNECTSTATE_CLASS : uint
-            {
-                WTSActive,
-                WTSConnected,
-                WTSConnectQuery,
-                WTSShadow,
-                WTSDisconnected,
-                WTSIdle,
-                WTSListen,
-                WTSReset,
-                WTSDown,
-                WTSInit
-            }
-            [StructLayout(LayoutKind.Sequential)]
-            internal struct WTS_PROCESS_INFO
-            {
-                public int SessionId { get; set; }
-                public int ProcessId { get; set; }
-                public string ProcessName { get; set; }
-                public string UserId { get; set; }
-            }
-            #endregion
-
             [DllImport("user32.dll", SetLastError = true)]
             internal static extern bool EnumWindowStations(EnumWindowStationsDelegate lpEnumFunc, IntPtr lParam);
             internal delegate bool EnumWindowStationsDelegate(string windowStation, IntPtr lParam);
-            internal static bool EnumWindowStationsCallback(string windowStation, IntPtr lParam)
-            {
-                var gch = GCHandle.FromIntPtr(lParam);
-                if (gch.Target is List<string> list)
-                {
-                    list.Add(windowStation);
-                    return true;
-                }
-                return false;
-            }
+
             [DllImport("user32.dll", SetLastError = true)]
             internal static extern bool EnumDesktops(IntPtr hWinSta, EnumDesktopsDelegate lpEnumFunc, IntPtr lParam);
             internal delegate bool EnumDesktopsDelegate(string lpszDesktop, IntPtr lParam);
-            internal static bool EnumDesktopsCallback(string lpszDesktop, IntPtr lParam)
-            {
-                var gch = GCHandle.FromIntPtr(lParam);
-                if (gch.Target is List<string> list)
-                {
-                    list.Add(lpszDesktop);
-                    return true;
-                }
-                return false;
-            }
+
             [DllImport("user32.dll", SetLastError = true)]
             internal static extern bool EnumDesktopWindows(IntPtr hDesktop, EnumWindowsDelegate lpfn, IntPtr lParam);
             internal delegate bool EnumWindowsDelegate(IntPtr hWnd, IntPtr lParam);
@@ -139,18 +56,7 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
                 }
                 return false;
             }
-            [DllImport("user32.dll", SetLastError = true)]
-            internal static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
-            internal enum WM
-            {
-                CLOSE = 0x0002,
-                SYSCOMMAND = 0x0112,
-            }
-            internal enum SC
-            {
-                CLOSE = 0xF060
-            }
             [Flags]
             internal enum MB : uint
             {
@@ -207,257 +113,284 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
                 SWITCHDESKTOP = 0x0100,
                 ALL = READOBJECTS | CREATEWINDOW | CREATEMENU | HOOKCONTROL | JOURNALRECORD | JOURNALPLAYBACK | ENUMERATE | WRITEOBJECTS | SWITCHDESKTOP,
             }
+
+            [DllImport("advapi32.dll", SetLastError = true)]
+            internal static extern bool OpenProcessToken(IntPtr ProcessHandle, uint DesiredAccess, out IntPtr TokenHandle);
+
+            [Flags]
+            internal enum Token : uint
+            {
+                AssignPrimary = 0x0001,
+                Duplicate = 0x0002,
+                Impersonate = 0x0004,
+                Query = 0x0008,
+                QuerySource = 0x0010,
+                AdjustPrivileges = 0x0020,
+                AdjustGroups = 0x0040,
+                AdjustDefault = 0x0080,
+                AdjustSessionid = 0x0100,
+                Read = 0x00020000 | Query,
+                AllAccess = 0x000F0000 | AssignPrimary | Duplicate | Impersonate | Query | QuerySource | AdjustPrivileges | AdjustGroups | AdjustDefault | AdjustSessionid,
+            }
+
+            [DllImport("advapi32.dll", SetLastError = true)]
+            internal static extern bool DuplicateTokenEx(
+                IntPtr hExistingToken,
+                uint dwDesiredAccess,
+                ref SecutiryAttributes lpTokenAttributes,
+                SecurityImpersonationLevel ImpersonationLevel,
+                TokenType TokenType,
+                out IntPtr phNewToken);
+
+            [StructLayout(LayoutKind.Sequential)]
+            internal struct SecutiryAttributes
+            {
+                internal int nLength;
+                internal IntPtr lpSecurityDescripter;
+                internal int bInheritHandle;
+            }
+            
+            internal enum SecurityImpersonationLevel
+            {
+                Anonymous,
+                Identification,
+                Impersonation,
+                Delegation,
+            }
+            internal enum TokenType
+            {
+                Primary = 1,
+                Impersonation,
+            }
+
+            [DllImport("advapi32.dll", SetLastError = true)]
+            internal static extern bool LookupPrivilegeValue(string lpSystemName, string lpName, out Luid lpLuid);
+
+            [StructLayout(LayoutKind.Sequential)]
+            internal struct Luid
+            {
+                internal uint LowPart;
+                internal int HighPart;
+            }
+
+            [DllImport("advapi32.dll", SetLastError = true)]
+            internal static extern bool AdjustTokenPrivileges(
+                IntPtr TokenHandle,
+                bool DisableAllPrivileges,
+                ref TOKEN_PRIVILEGES NewState,
+                uint Zero,
+                IntPtr Null1,
+                IntPtr Null2);
+
+            internal struct TOKEN_PRIVILEGES
+            {
+                public int PrivilegeCount;
+                [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1)]
+                public LUID_AND_ATTRIBUTES[] Privileges;
+            }
+            [StructLayout(LayoutKind.Sequential, Pack = 4)]
+            internal struct LUID_AND_ATTRIBUTES
+            {
+                public Luid Luid;
+                public uint Attributes;
+            }
+
+            [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+            internal static extern bool CreateProcessAsUser(
+                IntPtr hToken,
+                string lpApplicationName,
+                string lpCommandLine,
+                ref SecutiryAttributes lpProcessAttributes,
+                ref SecutiryAttributes lpThreadAttributes,
+                bool bInheritHandles,
+                uint dwCreationFlags,
+                IntPtr lpEnvironment,
+                string lpCurrentDirectory,
+                ref STARTUPINFO lpStartupInfo,
+                out PROCESS_INFORMATION lpProcessInformation);
+
+            [StructLayout(LayoutKind.Sequential)]
+            internal struct STARTUPINFO
+            {
+                internal int cb;
+                internal string lpReserved;
+                internal string lpDesktop;
+                internal string lpTitle;
+                internal int dwX;
+                internal int dwY;
+                internal int dwXSize;
+                internal int dwYSize;
+                internal int dwXCountChars;
+                internal int dwYCountChars;
+                internal int dwFillAttribute;
+                internal int dwFlags;
+                internal short wShowWindow;
+                internal short cbReserved2;
+                internal int lpReserve2;
+                internal int hStdInput;
+                internal int hStdOutput;
+                internal int hStdError;
+            }
+            [StructLayout(LayoutKind.Sequential)]
+            internal struct PROCESS_INFORMATION
+            {
+                internal IntPtr hProcess;
+                internal IntPtr hThread;
+                internal int dwProcessId;
+                internal int dwThreadId;
+            }
+            [Flags]
+            internal enum CreateProcessFlags : uint
+            {
+                DEBUG_PROCESS = 0x00000001,
+                DEBUG_ONLY_THIS_PROCESS = 0x00000002,
+                CREATE_SUSPENDED = 0x00000004,
+                DETACHED_PROCESS = 0x00000008,
+                CREATE_NEW_CONSOLE = 0x00000010,
+                NORMAL_PRIORITY_CLASS = 0x00000020,
+                IDLE_PRIORITY_CLASS = 0x00000040,
+                HIGH_PRIORITY_CLASS = 0x00000080,
+                REALTIME_PRIORITY_CLASS = 0x00000100,
+                CREATE_NEW_PROCESS_GROUP = 0x00000200,
+                CREATE_UNICODE_ENVIRONMENT = 0x00000400,
+                CREATE_SEPARATE_WOW_VDM = 0x00000800,
+                CREATE_SHARED_WOW_VDM = 0x00001000,
+                CREATE_FORCEDOS = 0x00002000,
+                BELOW_NORMAL_PRIORITY_CLASS = 0x00004000,
+                ABOVE_NORMAL_PRIORITY_CLASS = 0x00008000,
+                INHERIT_PARENT_AFFINITY = 0x00010000,
+                INHERIT_CALLER_PRIORITY = 0x00020000,
+                CREATE_PROTECTED_PROCESS = 0x00040000,
+                EXTENDED_STARTUPINFO_PRESENT = 0x00080000,
+                PROCESS_MODE_BACKGROUND_BEGIN = 0x00100000,
+                PROCESS_MODE_BACKGROUND_END = 0x00200000,
+                CREATE_BREAKAWAY_FROM_JOB = 0x01000000,
+                CREATE_PRESERVE_CODE_AUTHZ_LEVEL = 0x02000000,
+                CREATE_DEFAULT_ERROR_MODE = 0x04000000,
+                CREATE_NO_WINDOW = 0x08000000,
+                PROFILE_USER = 0x10000000,
+                PROFILE_KERNEL = 0x20000000,
+                PROFILE_SERVER = 0x40000000,
+                CREATE_IGNORE_SYSTEM_DEFAULT = 0x80000000,
+            }
         }
 
-        #region HandleExtensions
-        internal static IEnumerable<IntPtr> EnumWindowHandles(this IntPtr hWndRoot)
+        public static int CreateProcessAsUser(string commandLine, string currentPath)
         {
-            yield return hWndRoot;
+            var winlogonProcess = Process.GetProcesses().FirstOrDefault(p => p.ProcessName.Contains("winlogon"));
 
-            var child = IntPtr.Zero;
-            while ((child = WinApi.FindWindowEx(hWndRoot, child, null, null)) != IntPtr.Zero)
+            if (!NativeMethods.OpenProcessToken(winlogonProcess.Handle, (uint)(NativeMethods.Token.Query | NativeMethods.Token.Impersonate | NativeMethods.Token.Duplicate), out var userToken))
             {
-                foreach (var childchild in EnumWindowHandles(child))
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            var tokenAttributes = new NativeMethods.SecutiryAttributes();
+            tokenAttributes.nLength = Marshal.SizeOf(tokenAttributes);
+
+            if (!NativeMethods.DuplicateTokenEx(userToken, 0x10000000, ref tokenAttributes, NativeMethods.SecurityImpersonationLevel.Impersonation,
+                NativeMethods.TokenType.Impersonation, out var newToken))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            if (!NativeMethods.LookupPrivilegeValue(null, "SeDebugPrivilege", out var seDebugNameValue))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            var tokPrivs = new NativeMethods.TOKEN_PRIVILEGES()
+            {
+                PrivilegeCount = 1,
+                Privileges = new NativeMethods.LUID_AND_ATTRIBUTES[]
                 {
-                    yield return childchild;
-                }
-            }
-        }
-
-        internal static string GetClassName(this IntPtr hWnd)
-        {
-            var builder = new StringBuilder(256);
-            WinApi.GetClassName(hWnd, builder, builder.Capacity);
-            return builder.ToString();
-        }
-
-        internal static string GetWindowText(this IntPtr hWnd)
-        {
-            var builder = new StringBuilder(256);
-            WinApi.GetWindowText(hWnd, builder, builder.Capacity);
-            return builder.ToString();
-        }
-
-        public static Process GetProcess(this IntPtr hWnd)
-        {
-            WinApi.GetWindowThreadProcessId(hWnd, out var processId);
-            return Process.GetProcessById(processId);
-        }
-
-        internal static void Close(this IntPtr hWnd)
-        {
-            WinApi.SendMessage(hWnd, (int)WinApi.WM.SYSCOMMAND, (int)WinApi.SC.CLOSE, IntPtr.Zero);
-            var code = Marshal.GetLastWin32Error();
-            if (code != 0)
+                    new NativeMethods.LUID_AND_ATTRIBUTES() {Luid = seDebugNameValue, Attributes = 0x00000002 },
+                },
+            };
+            if (!NativeMethods.AdjustTokenPrivileges(newToken, false, ref tokPrivs, 0, IntPtr.Zero, IntPtr.Zero))
             {
-                throw new Win32Exception(code);
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             }
-        }
 
-        internal static void SilentlyClose(this IntPtr hWnd)
-        {
-            WinApi.SendMessage(hWnd, (int)WinApi.WM.SYSCOMMAND, (int)WinApi.SC.CLOSE, IntPtr.Zero);
-        }
-        #endregion
-
-        public static void ShowInformationMessageBox(string text, string caption) =>
-            ShowMessageBox(text, caption, WinApi.MB.ICONINFORMATION);
-        public static void ShowWarningMessageBox(string text, string caption) =>
-            ShowMessageBox(text, caption, WinApi.MB.ICONWARNING);
-        public static void ShowErrorMessageBox(string text, string caption) =>
-            ShowMessageBox(text, caption, WinApi.MB.ICONERROR);
-
-        private static void ShowMessageBox(string text, string caption, WinApi.MB iconStyle)
-        {
-            //SwitchWinStaAndDesktop();
-            var type0001 = WinApi.MB.DEFAULT_DESKTOP_ONLY;
-            var type0010 = WinApi.MB.SETFOREGROUND;
-            var type0100 = WinApi.MB.TOPMOST;
-            var type1000 = WinApi.MB.SERVICE_NOTIFICATION;
-            var type0011 = type0001 | type0010;
-            var type0101 = type0001 | type0100;
-            var type1001 = type0001 | type1000;
-            var type0110 = type0010 | type0100;
-            var type1010 = type0010 | type1000;
-            var type1100 = type0100 | type1000;
-            var type0111 = type0100 | type0010 | type0001;
-            var type1011 = type1000 | type0010 | type0001;
-            var type1101 = type1000 | type0100 | type0001;
-            var type1110 = type1000 | type0100 | type0010;
-            var type1111 = type1000 | type0100 | type0010 | type0001;
-
-            var type =
-                WinApi.MB.OK |
-                iconStyle |
-                WinApi.MB.APPLMODAL |
-                type0111;
-            WinApi.MessageBox(IntPtr.Zero, text, caption, (uint)type);
-            var code = Marshal.GetLastWin32Error();
-            if (code != 0)
+            var threadAttributes = new NativeMethods.SecutiryAttributes();
+            threadAttributes.nLength = Marshal.SizeOf(threadAttributes);
+            var pi = new NativeMethods.PROCESS_INFORMATION();
+            var si = new NativeMethods.STARTUPINFO();
+            si.cb = Marshal.SizeOf(si);
+            si.lpDesktop = "Winsta0\\Winlogon";
+            // start the process using the new token
+            if (!NativeMethods.CreateProcessAsUser(
+                newToken,
+                string.Empty, commandLine,
+                ref tokenAttributes, ref threadAttributes, true,
+                (uint)(NativeMethods.CreateProcessFlags.CREATE_NEW_CONSOLE | NativeMethods.CreateProcessFlags.INHERIT_CALLER_PRIORITY),
+                IntPtr.Zero,
+                currentPath, ref si, out pi))
             {
-                throw new Win32Exception(code);
+                throw new Win32Exception(Marshal.GetLastWin32Error());
             }
-        }
 
-        private static void SwitchWinStaAndDesktop()
-        {
-            var hWinSta = WinApi.OpenWindowStation("WinSta0", false, (uint)WinApi.WINSTA.ALL_ACCESS);
-            WinApi.SetProcessWindowStation(hWinSta);
-            var hDesktop = WinApi.OpenDesktop("Default", 0, false, (uint)WinApi.DESKTOP.ALL);
-            WinApi.SetThreadDesktop(hDesktop);
-        }
-
-        public static (string, int) Switch()
-        {
-            var ptr = default(IntPtr);
-            try
-            {
-                var winsta = WinApi.GetProcessWindowStation();
-                var uoi = WinApi.UOI.USER_SID;
-                var needed = 0;
-                switch (uoi)
-                {
-                    case WinApi.UOI.FLAGS:
-                        WinApi.GetUserObjectInformation(winsta, (int)uoi, IntPtr.Zero, 0, out needed);
-                        ptr = Marshal.AllocHGlobal(needed);
-                        if (!WinApi.GetUserObjectInformation(winsta, (int)uoi, ptr, needed, out needed)) return ("Error", needed);
-
-                        return (ptr.ToInt32().ToString(), Marshal.GetLastWin32Error());
-                    case WinApi.UOI.NAME:
-                        WinApi.GetUserObjectInformation(winsta, (int)uoi, IntPtr.Zero, 0, out needed);
-                        ptr = Marshal.AllocHGlobal(needed);
-                        if (!WinApi.GetUserObjectInformation(winsta, (int)uoi, ptr, needed, out needed)) return ("Error", needed);
-
-                        var name = Marshal.PtrToStringAnsi(ptr);
-                        return (name, Marshal.GetLastWin32Error());
-                    case WinApi.UOI.TYPE:
-                        WinApi.GetUserObjectInformation(winsta, (int)uoi, IntPtr.Zero, 0, out needed);
-                        ptr = Marshal.AllocHGlobal(needed);
-                        if (!WinApi.GetUserObjectInformation(winsta, (int)uoi, ptr, needed, out needed)) return ("Error", needed);
-
-                        var type = Marshal.PtrToStringAnsi(ptr);
-                        return (type, Marshal.GetLastWin32Error());
-                    case WinApi.UOI.USER_SID:
-                        WinApi.GetUserObjectInformation(winsta, (int)uoi, IntPtr.Zero, 0, out needed);
-                        ptr = Marshal.AllocHGlobal(needed);
-                        if (!WinApi.GetUserObjectInformation(winsta, (int)uoi, ptr, needed, out needed)) return ("Error", needed);
-
-                        return (ptr.ToInt64().ToString(), Marshal.GetLastWin32Error());
-                    case WinApi.UOI.HEAPSIZE:
-                        WinApi.GetUserObjectInformation(winsta, (int)uoi, IntPtr.Zero, 0, out needed);
-                        ptr = Marshal.AllocHGlobal(needed);
-                        if (!WinApi.GetUserObjectInformation(winsta, (int)uoi, ptr, needed, out needed)) return ("Error", needed);
-
-                        return (ptr.ToInt64().ToString(), Marshal.GetLastWin32Error());
-                    case WinApi.UOI.IO:
-                        WinApi.GetUserObjectInformation(winsta, (int)uoi, IntPtr.Zero, 0, out needed);
-                        ptr = Marshal.AllocHGlobal(needed);
-                        if (!WinApi.GetUserObjectInformation(winsta, (int)uoi, ptr, needed, out needed)) return ("Error", needed);
-
-                        var io = Marshal.PtrToStringAnsi(ptr);
-                        return (io, Marshal.GetLastWin32Error());
-                    default:
-                        return ("none", int.MinValue);
-                }
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(ptr);
-            }
-        }
-
-        public static IEnumerable<(int, string)> WTSEnumerateSessions()
-        {
-            WinApi.WTSEnumerateSessions(IntPtr.Zero, 0, 1, out var ppSessionInfo, out var pCount);
-
-            var size = Marshal.SizeOf<WinApi.WTS_SESSION_INFO>();
-            var current = (int)ppSessionInfo;
-
-            for (var i = 0; i < pCount; i++)
-            {
-                var info = Marshal.PtrToStructure<WinApi.WTS_SESSION_INFO>((IntPtr)current);
-                current += size;
-
-                yield return (info.SessionId, info.WinStationName);
-            }
-            WinApi.WTSFreeMemory(ppSessionInfo);
-        }
-        public static IEnumerable<(int, int, string)> WTSEnumerateProcesses()
-        {
-            WinApi.WTSEnumerateProcesses(IntPtr.Zero, 0, 1, out var ppProcessInfo, out var pCount);
-
-            var size = Marshal.SizeOf<WinApi.WTS_PROCESS_INFO>();
-            var current = (int)ppProcessInfo;
-
-            for (var i = 0; i < pCount; i++)
-            {
-                var info = Marshal.PtrToStructure<WinApi.WTS_PROCESS_INFO>((IntPtr)current);
-                current += size;
-
-                yield return (info.SessionId, info.ProcessId, info.ProcessName);
-            }
-            WinApi.WTSFreeMemory(ppProcessInfo);
-        }
-        public static int WTSSendMessage(int sessionId, string text, string title)
-        {
-            WinApi.WTSSendMessage(IntPtr.Zero, sessionId, title, title.Length, text, text.Length,
-                (uint)(WinApi.MB.OK | WinApi.MB.ICONINFORMATION | WinApi.MB.TOPMOST | WinApi.MB.SETFOREGROUND | WinApi.MB.DEFAULT_DESKTOP_ONLY | WinApi.MB.SERVICE_NOTIFICATION),
-                0, out var response, false);
-            return Marshal.GetLastWin32Error();
-        }
-        public static IEnumerable<(int, string, int)> WTSSendMessageToAllSessions(string text, string title)
-        {
-            foreach(var (id, name) in WTSEnumerateSessions())
-            {
-                var code = WTSSendMessage(id, text, title);
-                yield return (id, name, code);
-            }
-        }
-        public static int WTSTerminateProcess(int pid)
-        {
-            WinApi.WTSTerminateProcess(IntPtr.Zero, pid, 0);
-            return Marshal.GetLastWin32Error();
+            return pi.dwProcessId;
         }
 
         public static IEnumerable<(IntPtr, string)> EnumWindowStations()
         {
             var list = new List<string>();
-            var gch = GCHandle.Alloc(list);
-            var childProc = new WinApi.EnumWindowStationsDelegate(WinApi.EnumWindowStationsCallback);
-
-            WinApi.EnumWindowStations(childProc, GCHandle.ToIntPtr(gch));
-
+            NativeMethods.EnumWindowStations(Callback, GCHandle.ToIntPtr(GCHandle.Alloc(list)));
             foreach (var winSta in list)
             {
-                yield return (WinApi.OpenWindowStation(winSta, false, (uint)WinApi.WINSTA.ALL_ACCESS), winSta);
+                yield return
+                    (NativeMethods.OpenWindowStation(winSta, false, (uint)NativeMethods.WINSTA.ALL_ACCESS), winSta);
+            }
+
+            bool Callback(string winSta, IntPtr lParam)
+            {
+                if(GCHandle.FromIntPtr(lParam).Target is List<string> winStas)
+                {
+                    winStas.Add(winSta);
+                    return true;
+                }
+                return false;
             }
         }
 
         public static IEnumerable<(IntPtr, string)> EnumDesktops(IntPtr hWinSta)
         {
             var list = new List<string>();
-            var gch = GCHandle.Alloc(list);
-            var child = new WinApi.EnumDesktopsDelegate(WinApi.EnumDesktopsCallback);
-
-            WinApi.EnumDesktops(hWinSta, child, GCHandle.ToIntPtr(gch));
-
+            NativeMethods.EnumDesktops(hWinSta, Callback, GCHandle.ToIntPtr(GCHandle.Alloc(list)));
             foreach (var desktop in list)
             {
-                yield return (WinApi.OpenDesktop(desktop, 0, false, (uint)WinApi.DESKTOP.ALL), desktop);
+                yield return
+                    (NativeMethods.OpenDesktop(desktop, 0, false, (uint)NativeMethods.DESKTOP.ALL), desktop);
+            }
+
+            bool Callback(string desktop, IntPtr lParam)
+            {
+                if(GCHandle.FromIntPtr(lParam).Target is List<string> desktops)
+                {
+                    desktops.Add(desktop);
+                    return true;
+                }
+                return false;
             }
         }
 
         public static IEnumerable<IntPtr> EnumDesktopWindows(IntPtr hDesktop)
         {
             var list = new List<IntPtr>();
-            var gch = GCHandle.Alloc(list);
-            var child = new WinApi.EnumWindowsDelegate(WinApi.EnumWindowsCallback);
-
-            WinApi.EnumDesktopWindows(hDesktop, child, GCHandle.ToIntPtr(gch));
-
+            NativeMethods.EnumDesktopWindows(hDesktop, Callback, GCHandle.ToIntPtr(GCHandle.Alloc(list)));
             foreach (var desktopWindow in list)
             {
                 yield return desktopWindow;
+            }
+
+            bool Callback(IntPtr hWnd, IntPtr lParam)
+            {
+                if(GCHandle.FromIntPtr(lParam).Target is List<IntPtr> callbackList)
+                {
+                    callbackList.Add(hWnd);
+                    return true;
+                }
+                return false;
             }
         }
     }

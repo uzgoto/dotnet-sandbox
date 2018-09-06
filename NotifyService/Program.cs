@@ -49,6 +49,11 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                             break;
                     }
                 }
+
+                service.OnStartByConsole(args);
+                Console.ReadKey();
+                service.OnStopByConsole();
+                return;
             }
             // Service mode.
             ServiceBase.Run(new NotifyService(new Log(Log.Name.Service)));
