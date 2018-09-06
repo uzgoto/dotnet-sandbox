@@ -32,6 +32,7 @@
             // NotifyService
             // 
             this.AutoLog = false;
+            this.CanHandleSessionChangeEvent = true;
             this.CanShutdown = true;
             this.ServiceName = "NotifyService";
 

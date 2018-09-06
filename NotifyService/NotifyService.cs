@@ -9,6 +9,7 @@ using System.Reflection;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using Uzgoto.Dotnet.Sandbox.Winapi;
 
 namespace Uzgoto.Dotnet.Sandbox.NotifyService
 {
@@ -41,15 +42,9 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
             field.SetValue(this, value | SERVICE_ACCEPT_PRESHUTDOWN);
         }
 
-        internal void OnStartByConsole(string[] args)
-        {
-            this.OnStart(args);
-        }
+        internal void OnStartByConsole(string[] args) => this.OnStart(args);
 
-        internal void OnStopByConsole()
-        {
-            this.OnStop();
-        }
+        internal void OnStopByConsole() => this.OnStop();
 
         protected override void OnStart(string[] args)
         {
@@ -86,6 +81,39 @@ namespace Uzgoto.Dotnet.Sandbox.NotifyService
                     break;
                 default:
                     base.OnCustomCommand(command);
+                    break;
+            }
+        }
+
+        protected override void OnSessionChange(SessionChangeDescription changeDescription)
+        {
+            var sessionId = changeDescription.SessionId;
+            var user = Session.GetUser(changeDescription.SessionId);
+            switch (changeDescription.Reason)
+            {
+                case SessionChangeReason.ConsoleConnect:
+                    break;
+                case SessionChangeReason.ConsoleDisconnect:
+                    break;
+                case SessionChangeReason.RemoteConnect:
+                    break;
+                case SessionChangeReason.RemoteDisconnect:
+                    break;
+                case SessionChangeReason.SessionLogon:
+                    this.OnStop();
+                    this.OnStart(null);
+                    break;
+                case SessionChangeReason.SessionLogoff:
+                    this.OnStop();
+                    this.OnStart(null);
+                    break;
+                case SessionChangeReason.SessionLock:
+                    break;
+                case SessionChangeReason.SessionUnlock:
+                    break;
+                case SessionChangeReason.SessionRemoteControl:
+                    break;
+                default:
                     break;
             }
         }
