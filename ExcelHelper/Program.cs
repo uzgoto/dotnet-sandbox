@@ -12,18 +12,32 @@ namespace Uzgoto.DotNetSnipet.Office
     {
         static void Main(string[] args)
         {
-            using (var runner = new SafeExcelMacroRunner())
-            {
-                var pathToFiles =
-                    Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), "Desktop", "work");
+            var pathToFiles =
+                Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), "Desktop", "work");
 
-                var dataBookName = "test.csv";
-                var macroBookName = "test.xlsm";
-                runner.OpenFile(Path.Combine(pathToFiles, dataBookName));
-                runner.OpenFile(Path.Combine(pathToFiles, macroBookName));
-                runner.Run(macroBookName, "Macro1");
-                runner.Save(macroBookName);
-            }
+            var templatePath = Path.Combine(pathToFiles, "template.xlsm");
+
+            Parallel.For(1, 5, idx =>
+            {
+                var macroBookName = $"test{idx}.xlsm";
+                var macroPath = Path.Combine(pathToFiles, macroBookName);
+                var dataPath = Path.Combine(pathToFiles, $"test.csv");
+
+                if (File.Exists(macroPath))
+                {
+                    File.Delete(macroPath);
+                }
+
+                File.Copy(templatePath, macroPath);
+
+                using (var runner = new SafeExcelMacroRunner())
+                {
+                    runner.OpenFile(dataPath);
+                    runner.OpenFile(macroPath);
+                    runner.Run(macroBookName, "Macro1");
+                    runner.Save(macroBookName);
+                }
+            });
         }
     }
 }

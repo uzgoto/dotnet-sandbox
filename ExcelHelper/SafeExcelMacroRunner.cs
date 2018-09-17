@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,29 +12,37 @@ namespace Uzgoto.DotNetSnipet.Office
 {
     class SafeExcelMacroRunner : ISafeExcelMacroRunner
     {
-        private Application xApplication = null;
-        private Workbooks xBooks = null;
-        private Dictionary<string, Workbook> xWorkbooks = null;
+        private readonly Application xApplication = null;
+        private readonly Workbooks xBooks = null;
+        private readonly Dictionary<string, Workbook> xWorkbooks = null;
 
         public SafeExcelMacroRunner()
         {
-            this.xApplication = new Application();
-            this.xApplication.DisplayAlerts = false;
-            this.xApplication.Visible = false;
+            this.xApplication = new Application()
+            {
+                DisplayAlerts = false,
+                Visible = false
+            };
             this.xBooks = this.xApplication.Workbooks;
+            this.xWorkbooks = new Dictionary<string, Workbook>();
         }
 
         public void Dispose()
         {
             if (this.xWorkbooks != null)
             {
-                foreach (var key in this.xWorkbooks.Keys)
+                var keys = this.xWorkbooks.Keys.ToArray();
+                foreach (var key in keys)
                 {
                     if (this.xWorkbooks.TryGetValue(key, out var value))
                     {
                         try
                         {
                             value.Close(false);
+                        }
+                        catch (COMException cex) when (cex.ErrorCode == -0x7FFE_FEF8)
+                        {
+                            Console.WriteLine($"{cex.Message}({cex.ErrorCode})");
                         }
                         finally
                         {
@@ -42,13 +51,11 @@ namespace Uzgoto.DotNetSnipet.Office
                         }
                     }
                 }
-                this.xWorkbooks = null;
             }
 
             if(this.xBooks != null)
             {
                 Marshal.FinalReleaseComObject(this.xBooks);
-                this.xBooks = null;
             }
 
             if(this.xApplication != null)
@@ -57,10 +64,13 @@ namespace Uzgoto.DotNetSnipet.Office
                 {
                     this.xApplication.Quit();
                 }
+                catch (COMException cex)
+                {
+                    Console.WriteLine($"{cex.Message}({cex.ErrorCode})");
+                }
                 finally
                 {
                     Marshal.FinalReleaseComObject(this.xApplication);
-                    this.xApplication = null;
                 }
             }
         }
