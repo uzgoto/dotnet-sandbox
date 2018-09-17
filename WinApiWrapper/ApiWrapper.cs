@@ -273,11 +273,130 @@ namespace Uzgoto.Dotnet.Sandbox.Winapi
                 PROFILE_SERVER = 0x40000000,
                 CREATE_IGNORE_SYSTEM_DEFAULT = 0x80000000,
             }
+
+            [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+            internal static extern uint WTSGetActiveConsoleSessionId();
+            [DllImport("kernel32.dll", SetLastError = true)]
+            public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
+
+            [Flags]
+            public enum ProcessAccessFlags : uint
+            {
+                All = 0x001F0FFF,
+                Terminate = 0x00000001,
+                CreateThread = 0x00000002,
+                VirtualMemoryOperation = 0x00000008,
+                VirtualMemoryRead = 0x00000010,
+                VirtualMemoryWrite = 0x00000020,
+                DuplicateHandle = 0x00000040,
+                CreateProcess = 0x000000080,
+                SetQuota = 0x00000100,
+                SetInformation = 0x00000200,
+                QueryInformation = 0x00000400,
+                QueryLimitedInformation = 0x00001000,
+                Synchronize = 0x00100000
+            }
+
+            [Flags]
+            public enum ACCESS_MASK : uint
+            {
+                DELETE = 0x00010000,
+                READ_CONTROL = 0x00020000,
+                WRITE_DAC = 0x00040000,
+                WRITE_OWNER = 0x00080000,
+                SYNCHRONIZE = 0x00100000,
+
+                STANDARD_RIGHTS_REQUIRED = 0x000F0000,
+
+                STANDARD_RIGHTS_READ = 0x00020000,
+                STANDARD_RIGHTS_WRITE = 0x00020000,
+                STANDARD_RIGHTS_EXECUTE = 0x00020000,
+
+                STANDARD_RIGHTS_ALL = 0x001F0000,
+
+                SPECIFIC_RIGHTS_ALL = 0x0000FFFF,
+
+                ACCESS_SYSTEM_SECURITY = 0x01000000,
+
+                MAXIMUM_ALLOWED = 0x02000000,
+
+                GENERIC_READ = 0x80000000,
+                GENERIC_WRITE = 0x40000000,
+                GENERIC_EXECUTE = 0x20000000,
+                GENERIC_ALL = 0x10000000,
+
+                DESKTOP_READOBJECTS = 0x00000001,
+                DESKTOP_CREATEWINDOW = 0x00000002,
+                DESKTOP_CREATEMENU = 0x00000004,
+                DESKTOP_HOOKCONTROL = 0x00000008,
+                DESKTOP_JOURNALRECORD = 0x00000010,
+                DESKTOP_JOURNALPLAYBACK = 0x00000020,
+                DESKTOP_ENUMERATE = 0x00000040,
+                DESKTOP_WRITEOBJECTS = 0x00000080,
+                DESKTOP_SWITCHDESKTOP = 0x00000100,
+
+                WINSTA_ENUMDESKTOPS = 0x00000001,
+                WINSTA_READATTRIBUTES = 0x00000002,
+                WINSTA_ACCESSCLIPBOARD = 0x00000004,
+                WINSTA_CREATEDESKTOP = 0x00000008,
+                WINSTA_WRITEATTRIBUTES = 0x00000010,
+                WINSTA_ACCESSGLOBALATOMS = 0x00000020,
+                WINSTA_EXITWINDOWS = 0x00000040,
+                WINSTA_ENUMERATE = 0x00000100,
+                WINSTA_READSCREEN = 0x00000200,
+
+                WINSTA_ALL_ACCESS = 0x0000037F
+            }
+        }
+
+        public static bool CreateProcessAsUser(string applicationName, out Process proc)
+        {
+            var dwSessionId = NativeMethods.WTSGetActiveConsoleSessionId();
+            var winlogonProcess = Process.GetProcessesByName("winlogon").FirstOrDefault(p => (uint)p.SessionId == dwSessionId);
+
+            var hProcess = NativeMethods.OpenProcess(NativeMethods.ProcessAccessFlags.All, false, winlogonProcess.Id);
+            if (!NativeMethods.OpenProcessToken(hProcess, (uint)NativeMethods.Token.Duplicate, out var hPToken))
+            {
+                //CloseHandle(hProcess);
+                proc = null;
+                return false;
+            }
+            var sa = new NativeMethods.SecutiryAttributes();
+            sa.nLength = Marshal.SizeOf<NativeMethods.SecutiryAttributes>();
+            if (!NativeMethods.DuplicateTokenEx(hPToken, (uint)NativeMethods.ACCESS_MASK.MAXIMUM_ALLOWED, ref sa, NativeMethods.SecurityImpersonationLevel.Identification, NativeMethods.TokenType.Primary, out var hUserTokenDup))
+            {
+                //CloseHandle(hProcess);
+                //CloseHandle(hPToken);
+                proc = null;
+                return false;
+            }
+            var sInfo = new NativeMethods.STARTUPINFO();
+            sInfo.cb = Marshal.SizeOf<NativeMethods.STARTUPINFO>();
+            sInfo.lpDesktop = @"winsta0\default";
+            if (NativeMethods.CreateProcessAsUser(
+                    hUserTokenDup,
+                    null,
+                    "cmd.exe",
+                    ref sa,
+                    ref sa,
+                    false,
+                    (uint)(NativeMethods.CreateProcessFlags.NORMAL_PRIORITY_CLASS | NativeMethods.CreateProcessFlags.CREATE_NEW_CONSOLE),
+                    IntPtr.Zero,
+                    null,
+                    ref sInfo,
+                    out var procInfo))
+            {
+                proc = Process.GetProcessById(procInfo.dwProcessId);
+                return true;
+            }
+            proc = null;
+            return false;
         }
 
         public static int CreateProcessAsUser(string commandLine, string currentPath)
         {
-            var winlogonProcess = Process.GetProcesses().FirstOrDefault(p => p.ProcessName.Contains("winlogon"));
+            var dwSessionId = NativeMethods.WTSGetActiveConsoleSessionId();
+            var winlogonProcess = Process.GetProcessesByName("winlogon").FirstOrDefault(p => p.SessionId == dwSessionId);
 
             if (!NativeMethods.OpenProcessToken(winlogonProcess.Handle, (uint)(NativeMethods.Token.Query | NativeMethods.Token.Impersonate | NativeMethods.Token.Duplicate), out var userToken))
             {
